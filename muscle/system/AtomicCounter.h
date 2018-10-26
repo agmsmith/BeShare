@@ -188,6 +188,8 @@ private:
 # else
    long _count;
 # endif
+#elif defined(__HAIKU__)
+   int32 _count;
 #elif defined(__BEOS__)
 # if defined(B_BEOS_VERSION_5)
    vint32 _count;
