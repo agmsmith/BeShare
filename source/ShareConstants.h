@@ -5,7 +5,8 @@
 
 namespace beshare {
 
-#define VERSION_STRING "2.28"
+#define VERSION_STRING "3.02"
+#define VERSION_DATE "2015/10/18"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE   50
@@ -18,9 +19,12 @@ namespace beshare {
 
 #define AUTO_UPDATER_SERVER "beshare.tycomsystems.com"
 #define AUTO_UPDATER_URL    "http://" AUTO_UPDATER_SERVER "/servers.txt"
+#define SECOND_AUTO_UPDATER_SERVER  "coquillemartialarts.com"
+#define SECOND_AUTO_UPDATER_URL    "http://" SECOND_AUTO_UPDATER_SERVER "/servers.txt"
 
 #define BESHARE_BEBITS_URL   "http://www.bebits.com/app/1330/"
-#define BESHARE_HOMEPAGE_URL "http://www.lcscanada.com/beshare/"
+//#define BESHARE_HOMEPAGE_URL "http://www.lcscanada.com/beshare/"
+#define BESHARE_FATELK_URL "http://fatelk.com/repo/"
 
 #define NO_FILE_LIMIT 999999
 

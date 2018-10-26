@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include <app/MessageFilter.h>
+#include <app/Clipboard.h>
 #include <interface/Box.h>
 #include <interface/Font.h>
 #include <interface/ScrollBar.h>
@@ -65,6 +66,7 @@ ChatWindow :: ChatWindow(BRect defRect, const char * title, window_look look, wi
    _defaultColors[COLOR_SCROLLBG].red = (tint_color(ui_color(B_DOCUMENT_BACKGROUND_COLOR), 1.07F)).red;
 #endif
 
+//   (void) GetAppSubdir("logs", _logsDir, true);
    (void) GetAppSubdir("logs", _logsDir, true);
 
    for (uint32 i=0; i<NUM_COLORS; i++) _colors[i] = _defaultColors[i];
@@ -1146,24 +1148,43 @@ BView * ChatWindow :: AddBorderView(BView * v)
 status_t
 ChatWindow :: GetAppSubdir(const char * subDirName, BDirectory & subDir, bool createIfNecessary) const
 {
-   app_info appInfo;
-   be_app->GetAppInfo(&appInfo);
-   BEntry appEntry(&appInfo.ref);
-   appEntry.GetParent(&appEntry);  // get the directory it's in
-   BPath path(&appEntry);
-   BPath subPath(&appEntry);
-   subPath.Append(subDirName);
+//   app_info appInfo;
+//   be_app->GetAppInfo(&appInfo);
+//   BEntry appEntry(&appInfo.ref);
+//   appEntry.GetParent(&appEntry);  // get the directory it's in
+//   BPath path(&appEntry);
+//   BPath subPath(&appEntry);
+//   subPath.Append(subDirName);
+//
+//   // If the directory is already there, use it
+//   if (subDir.SetTo(subPath.Path()) == B_NO_ERROR) return B_NO_ERROR;
+//
+//   // Directory not there?  Shall we create it then?
+//   if (createIfNecessary)
+//   {
+//      BDirectory appDir(path.Path());
+//      if ((appDir.InitCheck() == B_NO_ERROR)&&(appDir.CreateDirectory(subDirName, &subDir) == B_NO_ERROR)) return B_NO_ERROR;
+//   }
+//   return B_ERROR;  // oops, couldn't get it
 
-   // If the directory is already there, use it
-   if (subDir.SetTo(subPath.Path()) == B_NO_ERROR) return B_NO_ERROR;
 
-   // Directory not there?  Shall we create it then?
-   if (createIfNecessary)
-   {
-      BDirectory appDir(path.Path());
-      if ((appDir.InitCheck() == B_NO_ERROR)&&(appDir.CreateDirectory(subDirName, &subDir) == B_NO_ERROR)) return B_NO_ERROR;
-   }
-   return B_ERROR;  // oops, couldn't get it
+//// Revision for HaikuPM to put folders in home rather than (read-only!) app folder ////
+
+	BDirectory appDir("/boot/home/BeShare");	// Common base directory for PM
+	if (appDir.InitCheck() != B_OK)			// assume we always want this to exist
+		BDirectory("/boot/home").CreateDirectory("BeShare", &appDir);
+
+	// If the directory is already there, use it
+	BPath path(&appDir, subDirName);
+	if (subDir.SetTo(path.Path()) == B_OK) return B_OK;
+
+	// Directory not there?  Shall we create it then?
+	if (createIfNecessary)
+	{
+		if (appDir.CreateDirectory(subDirName, &subDir) == B_OK)
+			 return B_OK;
+	}
+	return B_ERROR;  // oops, couldn't get it
 }
 
 void ChatWindow :: CloseLogFile()

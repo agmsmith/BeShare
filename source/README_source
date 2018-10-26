@@ -1,0 +1,14 @@
+
+This archive holds the complete sources needed to build
+BeShare 3.00, including the MUSCLE 3.20 library sources.
+The latter have been slightly tweaked for Haiku's needs,
+but are still compatible with BeOS.
+
+In the 'source' directory, "Makefile" is for Haiku,
+with the old PPC etc. stuff removed; "Makefile BeOS"
+is essentially the original 2.28 version with one
+added source file.  If you're working in BeOS, it's
+probably best to rename them.
+
+To build (after renaming the Makefile if you're in BeOS),
+simply cd to the 'source' directory, and type "make".

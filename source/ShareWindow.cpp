@@ -61,9 +61,22 @@
 #include "ShareMIMEInfo.h"
 #include "RemoteUserItem.h"
 #include "RemoteFileItem.h"
+#include "RemoteInfo.h"
 #include "ColorPicker.h"
 
+//#define DEBUG true
+
+#define ZDPRINTF(x)
+#ifdef DEBUG
+ #include <stdio.h>
+ #define DPRINTF(x) printf x
+#else
+ #define DPRINTF(x)
+#endif
+
+
 namespace beshare {
+	int servertest = 0;
 
 static String RemoveSpecialQueryChars(const String & localString)
 {
@@ -383,7 +396,9 @@ private:
 // add them at run time based on the servers.txt file it downloads
 static const char * _defaultServers[] = 
 {
-   "beshare.TyComSystems.com",    // Minox's default server
+   "coquilletkd.com",    // bbjimmy's server
+   "beshare.tycomsystems.com", // Minox's Server
+   "beshare.agmsmith.ca", // Alexander G. M. Smith's server
 };
 
 // Any connection that hasn't transferred data in >= 5 minutes will be cut
@@ -403,10 +418,11 @@ static const char * _defaultServers[] =
 
 // Size constants for the non-resizable parts of the GUI
 #define USER_LIST_WIDTH    125
-#define STATUS_VIEW_WIDTH  490
+#define STATUS_VIEW_WIDTH  500
 #define UPPER_VIEW_HEIGHT  (fontHeight+7.0f)
+#define QUERY_VIEW_HEIGHT  UPPER_VIEW_HEIGHT
 #define CHAT_VIEW_HEIGHT   125
-#define USER_ENTRY_WIDTH   175
+#define USER_ENTRY_WIDTH   200
 #define USER_STATUS_WIDTH  125
 
 #define SPECIAL_COLUMN_CHAR 0x01
@@ -1232,72 +1248,35 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    settingsMenu->AddItem(_firewalled);
 
    AddChild(_menuBar);                          
-   BRect contentBounds = Bounds();
-   contentBounds.top = _menuBar->Bounds().Height();
+   BRect contentFrame = Bounds();
+   contentFrame.top = _menuBar->Bounds().Height();
 
    // Create group/area views (top level stuff)
-   BView * contentView = new BView(contentBounds, "ContentView", B_FOLLOW_ALL_SIDES, 0);
+   BView * contentView = new BView(contentFrame, "ContentView", B_FOLLOW_ALL_SIDES, 0);
    AddBorderView(contentView);
    AddChild(contentView);
    {
       // Fill out the upperLevel view
-      BRect upperViewBounds(0, 0, contentBounds.Width() - hMargin, UPPER_VIEW_HEIGHT);
-      BView * upperView = new BView(upperViewBounds, "UpperView", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 0);
+      BRect upperViewFrame(0, 0, contentFrame.Width() - hMargin, UPPER_VIEW_HEIGHT);
+      BView * upperView = new BView(upperViewFrame, "UpperView", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 0);
       AddBorderView(upperView);
       contentView->AddChild(upperView);
-      {
-         // Fill out the query view
-         BRect queryViewBounds(0, 0, upperViewBounds.Width()-STATUS_VIEW_WIDTH, upperViewBounds.Height());
-         _queryView = new BView(queryViewBounds, NULL, B_FOLLOW_ALL_SIDES, 0);
-         AddBorderView(_queryView);
-         upperView->AddChild(_queryView);
-         
-         const char * q = str(STR_QUERY);
-         _queryMenu = new BMenu(q);
-         float qw = _queryView->StringWidth(q)+36.0f;
-         _queryView->AddChild(AddBorderView(new BMenuField(BRect(hMargin,4,qw,fontHeight), NULL, NULL, _queryMenu)));
-         
-         float right = queryViewBounds.Width()-hMargin;
-         float stringWidth = _queryMenu->StringWidth(str(STR_STOP_QUERY))+10.0f;
-         _disableQueryButton = new BButton(BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_STOP_QUERY), new BMessage(SHAREWINDOW_COMMAND_DISABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
-         AddBorderView(_disableQueryButton);
-         _queryView->AddChild(_disableQueryButton);
-         right -= (stringWidth + hMargin);
 
-         stringWidth = _queryMenu->StringWidth(str(STR_START_QUERY))+10.0f;
-         _enableQueryButton = new BButton(BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_START_QUERY), new BMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
-         AddBorderView(_enableQueryButton);
-         _queryView->AddChild(_enableQueryButton);
-         right -= (stringWidth + hMargin);
-
-         const char * startupQuery;
-         if (settingsMsg.FindString("query", &startupQuery) != B_NO_ERROR) startupQuery = "*.mp3";
-         _fileNameQueryEntry = new BTextControl(BRect(qw-10.0f,6,right,fontHeight), NULL, NULL, startupQuery, new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY), B_FOLLOW_ALL_SIDES);
-         AddBorderView(_fileNameQueryEntry);
-         _fileNameQueryEntry->SetTarget(toMe);
-         _queryView->AddChild(_fileNameQueryEntry);
-         // Restore any additional strings....
-         const char * listQuery;
-         for (int qh=1; (settingsMsg.FindString("query", qh, &listQuery) == B_NO_ERROR); qh++) 
-         {
-            BMessage * msg = new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY);
-            msg->AddString("query", listQuery);
-            _queryMenu->AddItem(new BMenuItem(listQuery, msg));
-         }
-      }
 
       {
          // Fill out the status view
-         BRect statusViewBounds(upperViewBounds.Width()-STATUS_VIEW_WIDTH, 0, upperViewBounds.Width(), upperViewBounds.Height());
-         _statusView = new BView(statusViewBounds, NULL, B_FOLLOW_RIGHT| B_FOLLOW_TOP_BOTTOM, 0);
+         BRect statusViewFrame(upperViewFrame.Width()-STATUS_VIEW_WIDTH, 0,
+         	 upperViewFrame.Width(), upperViewFrame.Height());
+         _statusView = new BView(statusViewFrame, NULL, B_FOLLOW_RIGHT| B_FOLLOW_TOP_BOTTOM, 0);
          AddBorderView(_statusView);
          upperView->AddChild(_statusView);
 
          {
             // Fill out the Server menu and text control
-            float serverMenuWidth = _queryMenu->StringWidth(str(STR_SERVER))+25.0f;
+            float serverMenuWidth = _statusView->StringWidth(str(STR_SERVER))+25.0f;
             _serverMenu = new BMenu(str(STR_SERVER));
-            _statusView->AddChild(AddBorderView(_serverMenuField = new BMenuField(BRect(0,4,serverMenuWidth,statusViewBounds.Height()), NULL, NULL, _serverMenu)));
+            _statusView->AddChild(AddBorderView(_serverMenuField =
+            	 new BMenuField(BRect(0,4,serverMenuWidth,statusViewFrame.Height()), NULL, NULL, _serverMenu)));
 
             const char * firstName = NULL;
             const char * sn = NULL;
@@ -1309,10 +1288,14 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
 
             // Add any default servers that aren't in the list already
             if (firstName == NULL) firstName = _defaultServers[0];
-            for (uint32 j=0; j<ARRAYITEMS(_defaultServers); j++) AddServerItem(_defaultServers[j], true, (j==0)?0:1);
+            for (uint32 j=0; j<ARRAYITEMS(_defaultServers); j++)
+            	 AddServerItem(_defaultServers[j], true, (j==0)?0:1);
 
             if (settingsMsg.FindString("server", &sn) == B_NO_ERROR) firstName = sn;
-            _serverEntry = new BTextControl(BRect(serverMenuWidth, 6, STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH+hMargin), statusViewBounds.Height()), NULL, NULL, firstName, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_SERVER));
+            _serverEntry = new BTextControl(
+            	BRect(serverMenuWidth, 6, STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH+hMargin),
+            	 statusViewFrame.Height()), NULL, NULL, firstName,
+            	  new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_SERVER));
             AddBorderView(_serverEntry);
             _serverEntry->SetTarget(toMe);
             _serverEntry->SetDivider(0.0f);
@@ -1321,10 +1304,12 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
 
          {
             // Fill out the UserName menu and text control
-            float userNameMenuWidth = _queryMenu->StringWidth(str(STR_USER_NAME_COLON))+25.0f;
+            float userNameMenuWidth = _statusView->StringWidth(str(STR_USER_NAME_COLON))+25.0f;
             float userNameMenuLeft = STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH);
             _userNameMenu = new BMenu(str(STR_USER_NAME_COLON));
-            _statusView->AddChild(AddBorderView(new BMenuField(BRect(userNameMenuLeft,4,userNameMenuLeft+userNameMenuWidth,statusViewBounds.Height()), NULL, NULL, _userNameMenu)));
+            _statusView->AddChild(AddBorderView(new BMenuField(
+            	BRect(userNameMenuLeft,4,userNameMenuLeft+userNameMenuWidth,statusViewFrame.Height()),
+            	 NULL, NULL, _userNameMenu)));
 
             const char * un = NULL;
             const char * first = NULL;
@@ -1334,10 +1319,13 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
                AddUserNameItem(un);
             }
 
-            if (settingsMsg.FindString("username", &un) != B_NO_ERROR) un = first ? first : FACTORY_DEFAULT_USER_NAME;
+            if (settingsMsg.FindString("username", &un) != B_NO_ERROR)
+            	 un = first ? first : FACTORY_DEFAULT_USER_NAME;
             _netClient->SetLocalUserName(un);
 
-            _userNameEntry = new BTextControl(BRect(userNameMenuLeft+userNameMenuWidth,6,STATUS_VIEW_WIDTH-(USER_STATUS_WIDTH+1),statusViewBounds.Height()), NULL, NULL, un, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_NAME));
+            _userNameEntry = new BTextControl(
+            	BRect(userNameMenuLeft+userNameMenuWidth,6,STATUS_VIEW_WIDTH-(USER_STATUS_WIDTH+1),
+            	 statusViewFrame.Height()), NULL, NULL, un, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_NAME));
             AddBorderView(_userNameEntry);
             _userNameEntry->SetTarget(toMe);
          
@@ -1348,10 +1336,12 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             // Fill out the UserStatus menu and text control
             String statusColon = str(STR_STATUS);
             statusColon += ':';
-            float userStatusMenuWidth = _queryMenu->StringWidth(statusColon())+25.0f;
+            float userStatusMenuWidth = _statusView->StringWidth(statusColon())+25.0f;
             float userStatusMenuLeft = hMargin+(STATUS_VIEW_WIDTH-USER_STATUS_WIDTH);
             _userStatusMenu = new BMenu(statusColon());
-            _statusView->AddChild(AddBorderView(new BMenuField(BRect(userStatusMenuLeft,4,userStatusMenuLeft+userStatusMenuWidth,statusViewBounds.Height()), NULL, NULL, _userStatusMenu)));
+            _statusView->AddChild(AddBorderView(new BMenuField(
+            	BRect(userStatusMenuLeft,4,userStatusMenuLeft+userStatusMenuWidth,statusViewFrame.Height()),
+            	 NULL, NULL, _userStatusMenu)));
 
             const char * us = NULL;
             const char * first = NULL;
@@ -1366,26 +1356,83 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
                AddUserStatusItem(FACTORY_DEFAULT_USER_AWAY_STATUS);
             }
 
-            if (settingsMsg.FindString("userstatus", &us) != B_NO_ERROR) us = first ? first : FACTORY_DEFAULT_USER_STATUS;
+            if (settingsMsg.FindString("userstatus", &us) != B_NO_ERROR)
+            	 us = first ? first : FACTORY_DEFAULT_USER_STATUS;
             _netClient->SetLocalUserStatus(us);
 
-            _userStatusEntry = new BTextControl(BRect(userStatusMenuLeft+userStatusMenuWidth,6,STATUS_VIEW_WIDTH-1,statusViewBounds.Height()), NULL, NULL, us, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_STATUS));
+            _userStatusEntry = new BTextControl(
+             BRect(userStatusMenuLeft+userStatusMenuWidth,6,STATUS_VIEW_WIDTH-1,statusViewFrame.Height()),
+              NULL, NULL, us, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_STATUS));
             AddBorderView(_userStatusEntry);
             _userStatusEntry->SetTarget(toMe);
          
             _statusView->AddChild(_userStatusEntry);
          }
       }
+      
    }
     
-   BRect middleBounds(2, UPPER_VIEW_HEIGHT, contentBounds.Width()-hMargin, contentBounds.Height()-CHAT_VIEW_HEIGHT);
+   BRect middleFrame(2, UPPER_VIEW_HEIGHT, contentFrame.Width()-hMargin, contentFrame.Height()-CHAT_VIEW_HEIGHT);
 
-   BRect resultsBounds(0, 0, middleBounds.Width()-(USER_LIST_WIDTH+hMargin), middleBounds.Height());
-   BView * resultsView = new BView(resultsBounds, "IOView", B_FOLLOW_ALL_SIDES, 0);
+   BRect resultsFrame(0, UPPER_VIEW_HEIGHT, middleFrame.Width()-(USER_LIST_WIDTH+hMargin), middleFrame.Height());
+   BView * resultsView = new BView(resultsFrame, "IOView", B_FOLLOW_ALL_SIDES, 0);
    AddBorderView(resultsView);
 
-   CLVContainerView* resultsContainerView;
-   _resultsView = new ResultsView(SHAREWINDOW_COMMAND_SWITCH_TO_PAGE, BRect(hMargin, vMargin, resultsView->Bounds().Width()-(B_V_SCROLL_BAR_WIDTH+2), resultsView->Bounds().Height()-(vMargin+fontHeight+B_H_SCROLL_BAR_HEIGHT+8)),&resultsContainerView, NULL, B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE,B_MULTIPLE_SELECTION_LIST,false,true,true,true,B_FANCY_BORDER);
+   {
+         // Fill out the query view
+         BRect queryViewFrame(0, 0, resultsFrame.Width(), QUERY_VIEW_HEIGHT);
+         _queryView = new BView(queryViewFrame, NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 0);
+         AddBorderView(_queryView);
+         resultsView->AddChild(_queryView);
+         
+         const char * q = str(STR_QUERY);
+         _queryMenu = new BMenu(q);
+         float qw = _queryView->StringWidth(q)+36.0f;
+         _queryView->AddChild(AddBorderView(new BMenuField(
+         	BRect(hMargin,4,qw,fontHeight), NULL, NULL, _queryMenu)));
+         
+         float right = queryViewFrame.Width()-hMargin;
+         float stringWidth = _queryMenu->StringWidth(str(STR_STOP_QUERY))+36.0f;
+         _disableQueryButton = new BButton(
+         	BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_STOP_QUERY),
+         	 new BMessage(SHAREWINDOW_COMMAND_DISABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
+         AddBorderView(_disableQueryButton);
+         _queryView->AddChild(_disableQueryButton);
+         right -= (stringWidth + hMargin);
+
+         stringWidth = _queryMenu->StringWidth(str(STR_START_QUERY))+36.0f;
+         _enableQueryButton = new BButton(
+         	BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_START_QUERY),
+         	 new BMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
+         AddBorderView(_enableQueryButton);
+         _queryView->AddChild(_enableQueryButton);
+         right -= (stringWidth + hMargin);
+
+         const char * startupQuery;
+         if (settingsMsg.FindString("query", &startupQuery) != B_NO_ERROR) startupQuery = "*.mp3";
+         _fileNameQueryEntry = new BTextControl(
+         	BRect(qw-10.0f,6,right,fontHeight), NULL, NULL, startupQuery,
+         	 new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY), B_FOLLOW_ALL_SIDES);
+         AddBorderView(_fileNameQueryEntry);
+         _fileNameQueryEntry->SetTarget(toMe);
+         _queryView->AddChild(_fileNameQueryEntry);
+         // Restore any additional strings....
+         const char * listQuery;
+         for (int qh=1; (settingsMsg.FindString("query", qh, &listQuery) == B_NO_ERROR); qh++) 
+         {
+            BMessage * msg = new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY);
+            msg->AddString("query", listQuery);
+            _queryMenu->AddItem(new BMenuItem(listQuery, msg));
+         }
+      }
+
+      CLVContainerView* resultsContainerView;
+   _resultsView = new ResultsView(SHAREWINDOW_COMMAND_SWITCH_TO_PAGE,
+     BRect(hMargin, vMargin+QUERY_VIEW_HEIGHT, resultsView->Bounds().Width()-(B_V_SCROLL_BAR_WIDTH+2),
+      resultsView->Bounds().Height()-(vMargin+fontHeight+B_H_SCROLL_BAR_HEIGHT+8)),
+      &resultsContainerView, NULL,
+       B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_FRAME_EVENTS|B_NAVIGABLE,B_MULTIPLE_SELECTION_LIST,
+       false,true,true,true,B_FANCY_BORDER);
    AddBorderView(resultsContainerView);
    _resultsView->SetSortFunction((CLVCompareFuncPtr) CompareFunc);
    _resultsView->SetTarget(toMe);
@@ -1396,13 +1443,19 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    _resultsView->AddColumn(new CLVColumn("", 20.0f, CLV_LOCK_AT_BEGINNING | CLV_NOT_MOVABLE | CLV_NOT_RESIZABLE));
 
    const float pageButtonWidth = 25.0f;
-   BView * dlButtonView = new BView(BRect(resultsBounds.left+2+pageButtonWidth, resultsView->Bounds().Height()-(fontHeight+vMargin+2),resultsBounds.right-(2+pageButtonWidth),resultsBounds.Height()-2), NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM, 0);
+   BView * dlButtonView = new BView(BRect(resultsFrame.left+2+pageButtonWidth, resultsView->Bounds().Height()-(fontHeight+vMargin+2),resultsFrame.right-(2+pageButtonWidth),resultsFrame.Height()-2), NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM, 0);
    AddBorderView(dlButtonView);
    resultsView->AddChild(dlButtonView);
 
    float clearButtonWidth = dlButtonView->StringWidth(str(STR_CLEAR_FINISHED_FAILED_TRANSFERS))+20.0f;
+   float infoButtonWidth = dlButtonView->StringWidth("Information")+20.0f;
    BRect dlBounds = dlButtonView->Bounds();
-   _requestDownloadsButton = new BButton(BRect(0, 0, dlBounds.Width()-(clearButtonWidth+hMargin), dlBounds.Height()), NULL, str(STR_DOWNLOAD_SELECTED_FILES), new BMessage(SHAREWINDOW_COMMAND_BEGIN_DOWNLOADS), B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE);
+
+   _requestInfoButton = new BButton(BRect(0, 0, infoButtonWidth, dlBounds.Height()), NULL, "Information", new BMessage(SHAREWINDOW_COMMAND_REQUEST_INFO), B_FOLLOW_LEFT | B_FOLLOW_TOP_BOTTOM);
+   AddBorderView(_requestInfoButton);
+   dlButtonView->AddChild(_requestInfoButton);
+
+   _requestDownloadsButton = new BButton(BRect(infoButtonWidth+hMargin, 0, dlBounds.Width()-(clearButtonWidth+hMargin), dlBounds.Height()), NULL, str(STR_DOWNLOAD_SELECTED_FILES), new BMessage(SHAREWINDOW_COMMAND_BEGIN_DOWNLOADS), B_FOLLOW_ALL_SIDES, B_WILL_DRAW|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE);
    AddBorderView(_requestDownloadsButton);
    dlButtonView->AddChild(_requestDownloadsButton);
 
@@ -1411,39 +1464,39 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    dlButtonView->AddChild(_clearFinishedDownloadsButton);
 
    BRect dlFrame = dlButtonView->Frame();
-   _prevPageButton = new BButton(BRect(resultsBounds.left, dlFrame.top, dlFrame.left - hMargin, dlFrame.bottom), NULL, "<", new BMessage(SHAREWINDOW_COMMAND_PREVIOUS_PAGE), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
+   _prevPageButton = new BButton(BRect(resultsFrame.left, dlFrame.top, dlFrame.left - hMargin, dlFrame.bottom), NULL, "<", new BMessage(SHAREWINDOW_COMMAND_PREVIOUS_PAGE), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM);
    AddBorderView(_prevPageButton);
    resultsView->AddChild(_prevPageButton);
    
-   _nextPageButton = new BButton(BRect(dlFrame.right + vMargin, dlFrame.top, resultsBounds.right, dlFrame.bottom), NULL, ">", new BMessage(SHAREWINDOW_COMMAND_NEXT_PAGE), B_FOLLOW_RIGHT | B_FOLLOW_BOTTOM);
+   _nextPageButton = new BButton(BRect(dlFrame.right + vMargin, dlFrame.top, resultsFrame.right, dlFrame.bottom), NULL, ">", new BMessage(SHAREWINDOW_COMMAND_NEXT_PAGE), B_FOLLOW_RIGHT | B_FOLLOW_BOTTOM);
    AddBorderView(_nextPageButton);
    resultsView->AddChild(_nextPageButton);
 
-   BRect transferBounds(resultsBounds.right+hMargin, resultsBounds.top+3, middleBounds.Width()-hMargin, middleBounds.bottom-30);
-   BView * transferView = new BView(transferBounds, NULL, B_FOLLOW_RIGHT | B_FOLLOW_TOP_BOTTOM, 0);
+   BRect transferFrame(resultsFrame.right+hMargin, resultsFrame.top+3, middleFrame.Width()-hMargin, middleFrame.bottom-30);
+   BView * transferView = new BView(transferFrame, NULL, B_FOLLOW_RIGHT | B_FOLLOW_TOP_BOTTOM, 0);
    AddBorderView(transferView);
 
-   _transferList = new TransferListView(BRect(2, 2, transferBounds.Width()-(2+B_V_SCROLL_BAR_WIDTH), transferBounds.Height()-(5+fontHeight+vMargin)), SHAREWINDOW_COMMAND_BAN_USER);
+   _transferList = new TransferListView(BRect(2, 2, transferFrame.Width()-(2+B_V_SCROLL_BAR_WIDTH), transferFrame.Height()-(5+fontHeight+vMargin)), SHAREWINDOW_COMMAND_BAN_USER);
    AddBorderView(_transferList);
    _transferList->SetTarget(toMe);
    _transferList->SetSelectionMessage(new BMessage(SHAREWINDOW_COMMAND_RESULT_SELECTION_CHANGED));
    _transferList->SetInvocationMessage(new BMessage(SHAREWINDOW_COMMAND_LAUNCH_TRANSFER_ITEM));
    transferView->AddChild(AddBorderView(new BScrollView(NULL, _transferList, B_FOLLOW_ALL_SIDES, 0L, false, true, B_FANCY_BORDER)));
 
-   _cancelTransfersButton = new BButton(BRect(0, _transferList->Frame().bottom+vMargin-1, transferBounds.Width(), transferBounds.Height()-1), NULL, str(STR_REMOVE_SELECTED), new BMessage(SHAREWINDOW_COMMAND_CANCEL_DOWNLOADS), B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM, B_WILL_DRAW|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE);
+   _cancelTransfersButton = new BButton(BRect(0, _transferList->Frame().bottom+vMargin-1, transferFrame.Width(), transferFrame.Height()-1), NULL, str(STR_REMOVE_SELECTED), new BMessage(SHAREWINDOW_COMMAND_CANCEL_DOWNLOADS), B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM, B_WILL_DRAW|B_NAVIGABLE|B_FULL_UPDATE_ON_RESIZE);
    AddBorderView(_cancelTransfersButton);
    transferView->AddChild(_cancelTransfersButton);
 
-   _resultsTransferSplit = new SplitPane(middleBounds, resultsView, transferView, B_FOLLOW_ALL_SIDES);
+   _resultsTransferSplit = new SplitPane(middleFrame, resultsView, transferView, B_FOLLOW_ALL_SIDES);
    _resultsTransferSplit->SetResizeViewOne(true, true);
    AddBorderView(_resultsTransferSplit);
 
-   BRect bottomBounds(hMargin, contentBounds.Height()+vMargin-CHAT_VIEW_HEIGHT, contentBounds.right-hMargin, contentBounds.Height()-vMargin);
-   BRect chatViewBounds(0, 0, bottomBounds.Width()-(USER_LIST_WIDTH+hMargin), bottomBounds.Height());
-   _chatView = new BView(chatViewBounds, NULL, B_FOLLOW_ALL_SIDES, 0);  // this will be populated by base class!
+   BRect bottomFrame(hMargin, contentFrame.Height()+vMargin-CHAT_VIEW_HEIGHT, contentFrame.right-hMargin, contentFrame.Height()-vMargin);
+   BRect chatViewFrame(0, 0, bottomFrame.Width()-(USER_LIST_WIDTH+hMargin), bottomFrame.Height());
+   _chatView = new BView(chatViewFrame, NULL, B_FOLLOW_ALL_SIDES, 0);  // this will be populated by base class!
    AddBorderView(_chatView);
 
-   BView * userListView = new BView(BRect(chatViewBounds.right+hMargin, bottomBounds.top, bottomBounds.right, bottomBounds.bottom), NULL, B_FOLLOW_RIGHT | B_FOLLOW_BOTTOM, 0);
+   BView * userListView = new BView(BRect(chatViewFrame.right+hMargin, bottomFrame.top, bottomFrame.right, bottomFrame.bottom), NULL, B_FOLLOW_RIGHT | B_FOLLOW_BOTTOM, 0);
    AddBorderView(userListView);
 
    CLVContainerView* userContainerView;
@@ -1457,12 +1510,12 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
 
    userListView->AddChild(userContainerView);
 
-   _chatUsersSplit = new SplitPane(bottomBounds, _chatView, userListView, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM);
+   _chatUsersSplit = new SplitPane(bottomFrame, _chatView, userListView, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM);
    _chatUsersSplit->SetResizeViewOne(true, true);
    _chatUsersSplit->SetMinSizeOne(BPoint(100.0f, 0.0f));  // making the chat view too skinny can lock up BeShare :^P
    AddBorderView(_chatUsersSplit);
 
-   _mainSplit = new SplitPane(BRect(contentBounds.left, UPPER_VIEW_HEIGHT+1.0f, contentBounds.right, contentBounds.bottom-20), _resultsTransferSplit, _chatUsersSplit, B_FOLLOW_ALL_SIDES);
+   _mainSplit = new SplitPane(BRect(contentFrame.left, UPPER_VIEW_HEIGHT+1.0f, contentFrame.right, contentFrame.bottom-20), _resultsTransferSplit, _chatUsersSplit, B_FOLLOW_ALL_SIDES);
    AddBorderView(_mainSplit);
    _mainSplit->SetResizeViewOne(true, true);
 
@@ -1576,10 +1629,29 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    // Start a thread to see if there are any new servers around
    if (_autoUpdateServers->IsMarked())
    {
+   		servertest=0;
       AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
       plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
-      if ((_checkServerListThread.StartInternalThread() == B_NO_ERROR)&&(_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)) _checkServerListThread.ShutdownInternalThread();
-   }
+      if (_checkServerListThread.StartInternalThread() == B_NO_ERROR)
+      {
+      	
+      	if(_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)
+      	 { 
+      	_checkServerListThread.ShutdownInternalThread();
+      	
+    }
+      		
+  }
+  
+  		
+ 
+   } 	
+    
+    
+      			
+		 
+      
+   
    
    PostMessage(CHATWINDOW_COMMAND_UPDATE_COLORS);
 
@@ -2890,21 +2962,49 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                   }
                break;
 
-               // We get this when we successfully connect to Minox's HTTP server
+               // We get this when we successfully connect to the updater server HTTP server
                case MTT_EVENT_SESSION_CONNECTED:
                {
                   MessageRef pmsg = GetMessageFromPool();
                   if (pmsg())
                   { 
+                  if (servertest==0){
                      pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
                      _checkServerListThread.SendMessageToSessions(pmsg);
+                  }
+                  if (servertest==1){
+                     pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "SECOND_AUTO_UPDATER_SERVER"\n\n");
+                     _checkServerListThread.SendMessageToSessions(pmsg);
+                  }
+                  
                   }
                }
                break;
 
                // We get this when the HTTP server closes the session... here we can clean up
                case MTT_EVENT_SESSION_DETACHED:
+               if (servertest==1){  
+                          
                   _checkServerListThread.ShutdownInternalThread();
+				}
+				
+               if (servertest==0){
+               servertest=1;
+               
+
+       			AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
+      			plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
+      	
+      			
+      				
+      					if(_checkServerListThread.AddNewConnectSession(SECOND_AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)
+      	 			{ 
+      	 			
+      				_checkServerListThread.ShutdownInternalThread();      	
+      				}
+      	 		
+               }
+               
                break;
             }
          }
@@ -3063,15 +3163,18 @@ void ShareWindow :: MessageReceived(BMessage * msg)
       case SHAREWINDOW_COMMAND_ABOUT:
       {
          char temp[200];
-         sprintf(temp, "BeShare v%s\n%s Jeremy Friesner\njaf@lcsaudio.com\n\n%s Vitaliy Mikitchenko", VERSION_STRING, str(STR_BY), str(STR_COLOR_PREFS_BY));
-         const char * url = NULL;
-         switch((new BAlert("About BeShare", temp, "BeBits Page", "BeShare Page", "Okay"))->Go())
-         {
-            case 0: url = BESHARE_BEBITS_URL;   break;
-            case 1: url = BESHARE_HOMEPAGE_URL; break;
-         }
+//         sprintf(temp, "BeShare v%s\n%s Jeremy Friesner\njaf@lcsaudio.com\n\n%s Vitaliy Mikitchenko", VERSION_STRING, str(STR_BY), str(STR_COLOR_PREFS_BY));
+         sprintf(temp, "BeShare v%s (%s)\n%s Jeremy Friesner (jaf@lcsaudio.com) et al.\n\n", VERSION_STRING, VERSION_DATE, str(STR_BY));
+//         const char * url = NULL;
+         // Link options suppressed until confusions can be resolved...
+         (new BAlert("About BeShare", temp, "Okay"))->Go();
+//         switch((new BAlert("About BeShare", temp, "BeBits Page", "BeShare Page", "Okay"))->Go())
+//         {
+//            case 0: url = BESHARE_BEBITS_URL;   break;
+//            case 1: url = BESHARE_HOMEPAGE_URL; break;
+//         }
 
-         if (url) be_roster->Launch("text/html", 1, (char**) &url);
+//         if (url) be_roster->Launch("text/html", 1, (char**) &url);
       }
       break;
 
@@ -3182,7 +3285,17 @@ void ShareWindow :: MessageReceived(BMessage * msg)
          }
       break;
       
-      default:
+       case SHAREWINDOW_COMMAND_REQUEST_INFO:
+      {
+		BMessage filelistMsg;
+		int32 nextIndex;
+		for (int32 i=0; ((nextIndex =_resultsView->CurrentSelection(i)) >= 0); i++)
+			filelistMsg.AddPointer("item", _resultsView->ItemAt(nextIndex));
+		RemoteInfo::ShowInfo(filelistMsg);
+      }
+      break;
+
+     default:
          ChatWindow :: MessageReceived(msg);
       break;
    }
@@ -3242,7 +3355,7 @@ void ShareWindow :: UpdaterCommandReceived(const char * key, const char * value)
                if (temp.Length() > 30) temp = temp.Substring(0, 30);
 
                char buf[256];
-               sprintf(buf, str(STR_BESHARE_UPGRADE_NOTICE), temp(), BESHARE_BEBITS_URL);
+               sprintf(buf, str(STR_BESHARE_UPGRADE_NOTICE), temp(), BESHARE_FATELK_URL); //sprintf(buf, str(STR_BESHARE_UPGRADE_NOTICE), temp(), BESHARE_BEBITS_URL); 
                LogMessage(LOG_INFORMATION_MESSAGE, buf);
             }
          }
@@ -3559,6 +3672,7 @@ ShareWindow ::
 UpdateDownloadButtonStatus()
 {
    _requestDownloadsButton->SetEnabled((_isConnected)&&(_resultsView->CurrentSelection() >= 0));
+   _requestInfoButton->SetEnabled((_isConnected)&&(_resultsView->CurrentSelection() >= 0));
 
    bool deadTransfersPresent = false;
    for (int i=_transferList->CountItems()-1; i>=0; i--)
@@ -3970,7 +4084,10 @@ GetBitmap(const RemoteFileItem * item, int32 /*columnIndex*/) const
 {
    const BBitmap * bmp = NULL;
 
-   // For now, the only bitmap supported is the MIME type icon
+   // if the item supplies one, return it
+   if ((bmp = ((RemoteFileItem *)item)->GetIcon()) != NULL) return bmp;
+   
+   // Formerly, the only bitmap supported was the MIME type icon
    const char * mimeString;
    if (item->GetAttributes().FindString("beshare:Kind", &mimeString) == B_NO_ERROR)
    {
@@ -4047,6 +4164,7 @@ CreateColumn(ShareMIMEInfo * optMimeInfo, const char * attrName, bool remote)
       }
       else
       {
+         if (strncmp(attrName, "besharez:", 9) == 0) return; //ignore this attribute
          if (strncmp(attrName, "beshare:", 8) == 0)
          {
             // A BeShare var; handle these a bit differently  

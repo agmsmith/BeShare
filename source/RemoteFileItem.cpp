@@ -7,19 +7,37 @@
 #include "Colors.h"
 #include "ColumnListView.h"
 
+#ifdef __HAIKU__
+ #include <interface/IconUtils.h>
+#endif
+
+//#define DEBUG true
+
+#define ZDPRINTF(x)
+#ifdef DEBUG
+ #include <stdio.h>
+ #define DPRINTF(x) printf x
+#else
+ #define DPRINTF(x)
+#endif
+
 namespace beshare {
 
 RemoteFileItem ::
 RemoteFileItem(RemoteUserItem * owner, const char * fileName, const MessageRef & attrs)
-  : CLVListItem(0, false, false, 18.0f), _owner(owner), _fileName(fileName), _attributes(attrs)
+  : CLVListItem(0, false, false, 18.0f), _owner(owner), _fileName(fileName),
+   _attributes(attrs), _iconp(NULL)
 {
-   // empty
+   #ifdef DEBUG
+	printf("\nRemoteFileItem %s, attr:\n", fileName);
+	attrs()->PrintToStream();
+   #endif
 }
 
 RemoteFileItem ::
 ~RemoteFileItem()
 {
-   // empty
+	delete _iconp;
 }
 
 void RemoteFileItem::
@@ -80,6 +98,38 @@ GetPath() const
 {
    const char * ret;
    return (_attributes.GetItemPointer()->FindString("beshare:Path", &ret) == B_NO_ERROR) ? ret : "";
+}
+
+const BBitmap *
+RemoteFileItem ::
+GetIcon()
+{
+	if (_iconp) return _iconp;
+	const void *icondata;
+	uint32 iconsize;
+	#ifdef __HAIKU__
+	if (GetAttributes().FindData("besharez:Vector Icon", 'VICN', &icondata, &iconsize) == B_NO_ERROR)
+	{
+		_iconp = new BBitmap(BRect(0,0,15,15), B_RGBA32);
+		if (_iconp) BIconUtils::GetVectorIcon((const uint8 *)icondata, iconsize, _iconp);
+	}
+	else
+	#endif
+	if (GetAttributes().FindData("besharez:Mini Icon", 'MICN', &icondata, &iconsize) == B_NO_ERROR)
+	{
+   		if (iconsize != 256) return NULL;
+		_iconp = new BBitmap(BRect(0,0,15,15), B_COLOR_8_BIT);
+		if (_iconp) memcpy(_iconp->Bits(), icondata, 256);
+	}
+	return _iconp;
+}
+
+const char *
+RemoteFileItem ::
+GetInfo() const
+{
+   const char * ret;
+   return (_attributes.GetItemPointer()->FindString("beshare:Info", &ret) == B_NO_ERROR) ? ret : "";
 }
 
 };  // end namespace beshare

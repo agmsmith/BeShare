@@ -19,6 +19,7 @@
  *
  * Original code: Brian Tietz
  * Modified code: Ramshankar (Ram), Jeremy Friesner (jaf)
+ * Added B_COMMAND_KEY for selection (Haiku standard) Pete G. 2015/6/5
  *
  * This code was  taken from the BeShare's  modified version of ColumnListView  and does
  * not fall under the License of this program.
@@ -912,7 +913,8 @@ void ColumnListView::MouseDown(BPoint where)
 						Select(min_selection,max_selection,false);
 					}
 				}
-				else if((modifier_keys & B_OPTION_KEY) && type != B_SINGLE_SELECTION_LIST)
+				else if((modifier_keys & (B_OPTION_KEY | B_COMMAND_KEY))	// Pete G. 2015/6/5
+					&& type != B_SINGLE_SELECTION_LIST)
 					//If option held down, expand the selection to include just it.
 					Select(item_index,true);
 				else
@@ -927,7 +929,7 @@ void ColumnListView::MouseDown(BPoint where)
 			else
 			{
 				//Clicked an already selected item...
-				if(modifier_keys & B_OPTION_KEY)
+				if(modifier_keys & (B_OPTION_KEY | B_COMMAND_KEY))	// Pete G. 2015/6/5
 					//if option held down, remove it.
 					Deselect(item_index);
 				else if(modifier_keys & B_SHIFT_KEY)

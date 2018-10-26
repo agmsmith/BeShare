@@ -14,6 +14,7 @@
 #include "util/StringTokenizer.h"
 #include "iogateway/MessageIOGateway.h"
 #include "reflector/RateLimitSessionIOPolicy.h"
+#include "besupport/ConvertMessages.h"
 
 #include "Colors.h"
 #include "ChatWindow.h"
@@ -825,7 +826,17 @@ DoUploadAux()
                      if ((_currentFile.GetAttrInfo(attrName, &attrInfo) == B_NO_ERROR)&&(attrInfo.size > 0))
                      {
                         char * attrData = new char[attrInfo.size];
-                        if (_currentFile.ReadAttr(attrName, attrInfo.type, 0L, attrData, attrInfo.size) == attrInfo.size) (void) header()->AddData(attrName, attrInfo.type, attrData, attrInfo.size);
+                        if (_currentFile.ReadAttr(attrName, attrInfo.type, 0L, attrData, attrInfo.size) == attrInfo.size) {
+							if (attrInfo.type == B_MESSAGE_TYPE) {
+								BMessage bmsg;
+								bmsg.Unflatten(attrData);
+								Message mmsg;
+								ConvertFromBMessage(bmsg, mmsg);
+        	                	(void)  header()->AddMessage(attrName, mmsg);
+							}
+							else
+                        		(void) header()->AddData(attrName, attrInfo.type, attrData, attrInfo.size);
+                        }
                         delete [] attrData;
                      }
                   }
@@ -1021,8 +1032,18 @@ MessageReceived(const MessageRef & msgRef)
                      if ((msg->GetInfo(fieldName(), &type, &c)                   == B_NO_ERROR)&&
                          (msg->FindData(fieldName(), type, &attrData, &attrSize) == B_NO_ERROR))
                      {
+						if (type == B_MESSAGE_TYPE) {
+							Message mmsg;
+							msg->FindMessage(fieldName(), mmsg);
+							BMessage bmsg;
+							ConvertToBMessage(mmsg, bmsg);
+							attrSize = bmsg.FlattenedSize();
+							attrData = malloc(attrSize);
+							bmsg.Flatten((char *)attrData, attrSize);
+						}
                         (void)_currentFile.WriteAttr(fieldName(), type, 0, attrData, attrSize);
-                     }
+						if (type == B_MESSAGE_TYPE) free((void *)attrData);
+                    }
                   }
                }
 

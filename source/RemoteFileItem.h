@@ -1,6 +1,7 @@
 #ifndef REMOTE_FILE_ITEM_H
 #define REMOTE_FILE_ITEM_H
 
+#include <interface/Bitmap.h>
 #include "util/Queue.h"
 #include "message/Message.h"
 
@@ -35,11 +36,16 @@ public:
 
    const char * GetPath() const;
 
+   const BBitmap * GetIcon();
+
+   const char * GetInfo() const;
+
 private:
    RemoteUserItem * _owner;
    String _fileName;
    MessageRef _attributes;      
    float _textOffset;
+   BBitmap *_iconp;
 };
 
 };  // end namespace beshare

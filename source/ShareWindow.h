@@ -255,7 +255,8 @@ public:
       SHAREWINDOW_COMMAND_AUTO_RECONNECT,
       SHAREWINDOW_COMMAND_SHOW_COLOR_PICKER,
       SHAREWINDOW_COMMAND_SET_COMPRESSION_LEVEL,
-      SHAREWINDOW_COMMAND_TOGGLE_SHORTEST_UPLOADS_FIRST
+      SHAREWINDOW_COMMAND_TOGGLE_SHORTEST_UPLOADS_FIRST,
+      SHAREWINDOW_COMMAND_REQUEST_INFO
    };
 
 protected:
@@ -323,6 +324,7 @@ private:
 
    BButton * _clearFinishedDownloadsButton;
    BButton * _requestDownloadsButton;
+   BButton * _requestInfoButton;
    BButton * _cancelTransfersButton;
 
    BMenu        * _queryMenu;

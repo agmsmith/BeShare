@@ -23,6 +23,17 @@
 #include "ShareNetClient.h"
 #include "ShareWindow.h"
 
+//#define DEBUG true
+
+#define ZDPRINTF(x)
+#ifdef DEBUG
+ #include <stdio.h>
+ #define DPRINTF(x) printf x
+#else
+ #define DPRINTF(x)
+#endif
+
+
 namespace beshare {
 
 
@@ -545,6 +556,7 @@ NodeCreated(const node_ref & noderef, const entry_ref & entryref)
    BNode parentNode;
    node_ref parentNodeRef;
    WatchedDirData * wdd;
+   DPRINTF(("NodeCreated %s\n", entryref.name);)
    if ((er.GetParent(&parentEntry)            == B_NO_ERROR)&&
        (parentNode.SetTo(&parentEntry)        == B_NO_ERROR)&&
        (parentNode.GetNodeRef(&parentNodeRef) == B_NO_ERROR)&&
@@ -1046,7 +1058,7 @@ GetFileInfo(MessageRef & infoMessage, const entry_ref & entryRef, const node_ref
 
             // Remove the /shared-level prefix, since that can be assumed
             const char * p = path();
-            p = (strncmp(p, "/shared/", 8) == 0) ? (p + 8) : ""; 
+             p = (strncmp(p, "/shared/", 8) == 0) ? (p + 8) : ""; 
             infoMessage()->AddString("beshare:Path", p);
    
             // Now load the attributes for our file's MIME type and add them to our message
@@ -1059,6 +1071,7 @@ GetFileInfo(MessageRef & infoMessage, const entry_ref & entryRef, const node_ref
                if (mt.InitCheck() == B_NO_ERROR)
                {
                   BMessage attrInfo;
+                  // Get the attributes of the MIME type (not the file itself)
                   if (mt.GetAttrInfo(&attrInfo) == B_NO_ERROR)
                   {
                      const char * attrName;
@@ -1086,7 +1099,36 @@ GetFileInfo(MessageRef & infoMessage, const entry_ref & entryRef, const node_ref
                      }
                   }
                }
+               // see if file has a local (Haiku) Vector Icon (even in BeOS share...)
+               // ("besharez:" means don't add display column)
+               attr_info ainf;
+               if (file.GetAttrInfo("BEOS:ICON", &ainf) == B_NO_ERROR && ainf.type == 'VICN') {
+               		void *icondata = malloc(ainf.size);
+               		if (file.ReadAttr("BEOS:ICON", 'VICN', 0L, icondata, ainf.size) > 0)
+               			(void) infoMessage()->AddData("besharez:Vector Icon", 'VICN', icondata, ainf.size);
+               		free(icondata);
+               }
+               
+               // Get any individual mini icon the file actually has:
+               // (will get VICN from Haiku, too)
+               BBitmap icondata(BRect(0,0,15,15), B_COLOR_8_BIT);
+               if (ni.GetIcon(&icondata, B_MINI_ICON) == B_OK)
+               		infoMessage()->AddData("besharez:Mini Icon", 'MICN',
+               			icondata.Bits(), icondata.BitsLength());
+
+               // See if the file has extra information
+               if (file.GetAttrInfo("BeShare:Info", &ainf) == B_NO_ERROR) {
+               		void *infodata = malloc(ainf.size);
+               		if (file.ReadAttr("BeShare:Info", 'CSTR', 0L, infodata, ainf.size) > 0)
+               			(void) infoMessage()->AddData("beshare:Info", 'CSTR', infodata, ainf.size);
+               		free(infodata);
+               }
+               
             }
+            #ifdef DEBUG
+            	printf("\nBuilt infoMessage for %s:\n", entryRef.name);
+	            infoMessage()->PrintToStream();
+	        #endif
             return B_NO_ERROR;
          }
       }
