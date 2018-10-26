@@ -1103,32 +1103,32 @@ GetFileInfo(MessageRef & infoMessage, const entry_ref & entryRef, const node_ref
                // ("besharez:" means don't add display column)
                attr_info ainf;
                if (file.GetAttrInfo("BEOS:ICON", &ainf) == B_NO_ERROR && ainf.type == 'VICN') {
-               		void *icondata = malloc(ainf.size);
-               		if (file.ReadAttr("BEOS:ICON", 'VICN', 0L, icondata, ainf.size) > 0)
-               			(void) infoMessage()->AddData("besharez:Vector Icon", 'VICN', icondata, ainf.size);
-               		free(icondata);
+                    void *icondata = malloc(ainf.size);
+                    if (file.ReadAttr("BEOS:ICON", 'VICN', 0L, icondata, ainf.size) > 0)
+                        (void) infoMessage()->AddData("besharez:Vector Icon", 'VICN', icondata, ainf.size);
+                    free(icondata);
                }
                
                // Get any individual mini icon the file actually has:
                // (will get VICN from Haiku, too)
                BBitmap icondata(BRect(0,0,15,15), B_COLOR_8_BIT);
                if (ni.GetIcon(&icondata, B_MINI_ICON) == B_OK)
-               		infoMessage()->AddData("besharez:Mini Icon", 'MICN',
-               			icondata.Bits(), icondata.BitsLength());
+                    infoMessage()->AddData("besharez:Mini Icon", 'MICN',
+                        icondata.Bits(), icondata.BitsLength());
 
                // See if the file has extra information
                if (file.GetAttrInfo("BeShare:Info", &ainf) == B_NO_ERROR) {
-               		void *infodata = malloc(ainf.size);
-               		if (file.ReadAttr("BeShare:Info", 'CSTR', 0L, infodata, ainf.size) > 0)
-               			(void) infoMessage()->AddData("beshare:Info", 'CSTR', infodata, ainf.size);
-               		free(infodata);
+                    void *infodata = malloc(ainf.size);
+                    if (file.ReadAttr("BeShare:Info", 'CSTR', 0L, infodata, ainf.size) > 0)
+                        (void) infoMessage()->AddData("beshare:Info", 'CSTR', infodata, ainf.size);
+                    free(infodata);
                }
                
             }
             #ifdef DEBUG
-            	printf("\nBuilt infoMessage for %s:\n", entryRef.name);
-	            infoMessage()->PrintToStream();
-	        #endif
+                printf("\nBuilt infoMessage for %s:\n", entryRef.name);
+                infoMessage()->PrintToStream();
+            #endif
             return B_NO_ERROR;
          }
       }

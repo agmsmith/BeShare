@@ -76,7 +76,7 @@
 
 
 namespace beshare {
-	int servertest = 0;
+    int servertest = 0;
 
 static String RemoveSpecialQueryChars(const String & localString)
 {
@@ -1266,7 +1266,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
       {
          // Fill out the status view
          BRect statusViewFrame(upperViewFrame.Width()-STATUS_VIEW_WIDTH, 0,
-         	 upperViewFrame.Width(), upperViewFrame.Height());
+             upperViewFrame.Width(), upperViewFrame.Height());
          _statusView = new BView(statusViewFrame, NULL, B_FOLLOW_RIGHT| B_FOLLOW_TOP_BOTTOM, 0);
          AddBorderView(_statusView);
          upperView->AddChild(_statusView);
@@ -1276,7 +1276,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             float serverMenuWidth = _statusView->StringWidth(str(STR_SERVER))+25.0f;
             _serverMenu = new BMenu(str(STR_SERVER));
             _statusView->AddChild(AddBorderView(_serverMenuField =
-            	 new BMenuField(BRect(0,4,serverMenuWidth,statusViewFrame.Height()), NULL, NULL, _serverMenu)));
+                 new BMenuField(BRect(0,4,serverMenuWidth,statusViewFrame.Height()), NULL, NULL, _serverMenu)));
 
             const char * firstName = NULL;
             const char * sn = NULL;
@@ -1289,13 +1289,13 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             // Add any default servers that aren't in the list already
             if (firstName == NULL) firstName = _defaultServers[0];
             for (uint32 j=0; j<ARRAYITEMS(_defaultServers); j++)
-            	 AddServerItem(_defaultServers[j], true, (j==0)?0:1);
+                 AddServerItem(_defaultServers[j], true, (j==0)?0:1);
 
             if (settingsMsg.FindString("server", &sn) == B_NO_ERROR) firstName = sn;
             _serverEntry = new BTextControl(
-            	BRect(serverMenuWidth, 6, STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH+hMargin),
-            	 statusViewFrame.Height()), NULL, NULL, firstName,
-            	  new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_SERVER));
+                BRect(serverMenuWidth, 6, STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH+hMargin),
+                 statusViewFrame.Height()), NULL, NULL, firstName,
+                  new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_SERVER));
             AddBorderView(_serverEntry);
             _serverEntry->SetTarget(toMe);
             _serverEntry->SetDivider(0.0f);
@@ -1308,8 +1308,8 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             float userNameMenuLeft = STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH);
             _userNameMenu = new BMenu(str(STR_USER_NAME_COLON));
             _statusView->AddChild(AddBorderView(new BMenuField(
-            	BRect(userNameMenuLeft,4,userNameMenuLeft+userNameMenuWidth,statusViewFrame.Height()),
-            	 NULL, NULL, _userNameMenu)));
+                BRect(userNameMenuLeft,4,userNameMenuLeft+userNameMenuWidth,statusViewFrame.Height()),
+                 NULL, NULL, _userNameMenu)));
 
             const char * un = NULL;
             const char * first = NULL;
@@ -1320,12 +1320,12 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             }
 
             if (settingsMsg.FindString("username", &un) != B_NO_ERROR)
-            	 un = first ? first : FACTORY_DEFAULT_USER_NAME;
+                 un = first ? first : FACTORY_DEFAULT_USER_NAME;
             _netClient->SetLocalUserName(un);
 
             _userNameEntry = new BTextControl(
-            	BRect(userNameMenuLeft+userNameMenuWidth,6,STATUS_VIEW_WIDTH-(USER_STATUS_WIDTH+1),
-            	 statusViewFrame.Height()), NULL, NULL, un, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_NAME));
+                BRect(userNameMenuLeft+userNameMenuWidth,6,STATUS_VIEW_WIDTH-(USER_STATUS_WIDTH+1),
+                 statusViewFrame.Height()), NULL, NULL, un, new BMessage(SHAREWINDOW_COMMAND_USER_CHANGED_NAME));
             AddBorderView(_userNameEntry);
             _userNameEntry->SetTarget(toMe);
          
@@ -1340,8 +1340,8 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             float userStatusMenuLeft = hMargin+(STATUS_VIEW_WIDTH-USER_STATUS_WIDTH);
             _userStatusMenu = new BMenu(statusColon());
             _statusView->AddChild(AddBorderView(new BMenuField(
-            	BRect(userStatusMenuLeft,4,userStatusMenuLeft+userStatusMenuWidth,statusViewFrame.Height()),
-            	 NULL, NULL, _userStatusMenu)));
+                BRect(userStatusMenuLeft,4,userStatusMenuLeft+userStatusMenuWidth,statusViewFrame.Height()),
+                 NULL, NULL, _userStatusMenu)));
 
             const char * us = NULL;
             const char * first = NULL;
@@ -1357,7 +1357,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             }
 
             if (settingsMsg.FindString("userstatus", &us) != B_NO_ERROR)
-            	 us = first ? first : FACTORY_DEFAULT_USER_STATUS;
+                 us = first ? first : FACTORY_DEFAULT_USER_STATUS;
             _netClient->SetLocalUserStatus(us);
 
             _userStatusEntry = new BTextControl(
@@ -1389,21 +1389,21 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          _queryMenu = new BMenu(q);
          float qw = _queryView->StringWidth(q)+36.0f;
          _queryView->AddChild(AddBorderView(new BMenuField(
-         	BRect(hMargin,4,qw,fontHeight), NULL, NULL, _queryMenu)));
+            BRect(hMargin,4,qw,fontHeight), NULL, NULL, _queryMenu)));
          
          float right = queryViewFrame.Width()-hMargin;
          float stringWidth = _queryMenu->StringWidth(str(STR_STOP_QUERY))+36.0f;
          _disableQueryButton = new BButton(
-         	BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_STOP_QUERY),
-         	 new BMessage(SHAREWINDOW_COMMAND_DISABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
+            BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_STOP_QUERY),
+             new BMessage(SHAREWINDOW_COMMAND_DISABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
          AddBorderView(_disableQueryButton);
          _queryView->AddChild(_disableQueryButton);
          right -= (stringWidth + hMargin);
 
          stringWidth = _queryMenu->StringWidth(str(STR_START_QUERY))+36.0f;
          _enableQueryButton = new BButton(
-         	BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_START_QUERY),
-         	 new BMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
+            BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_START_QUERY),
+             new BMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
          AddBorderView(_enableQueryButton);
          _queryView->AddChild(_enableQueryButton);
          right -= (stringWidth + hMargin);
@@ -1411,8 +1411,8 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          const char * startupQuery;
          if (settingsMsg.FindString("query", &startupQuery) != B_NO_ERROR) startupQuery = "*.mp3";
          _fileNameQueryEntry = new BTextControl(
-         	BRect(qw-10.0f,6,right,fontHeight), NULL, NULL, startupQuery,
-         	 new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY), B_FOLLOW_ALL_SIDES);
+            BRect(qw-10.0f,6,right,fontHeight), NULL, NULL, startupQuery,
+             new BMessage(SHAREWINDOW_COMMAND_CHANGE_FILE_NAME_QUERY), B_FOLLOW_ALL_SIDES);
          AddBorderView(_fileNameQueryEntry);
          _fileNameQueryEntry->SetTarget(toMe);
          _queryView->AddChild(_fileNameQueryEntry);
@@ -1629,30 +1629,17 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    // Start a thread to see if there are any new servers around
    if (_autoUpdateServers->IsMarked())
    {
-   		servertest=0;
+        servertest=0;
       AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
       plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
       if (_checkServerListThread.StartInternalThread() == B_NO_ERROR)
       {
-      	
-      	if(_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)
-      	 { 
-      	_checkServerListThread.ShutdownInternalThread();
-      	
-    }
-      		
-  }
-  
-  		
- 
-   } 	
-    
-    
-      			
-		 
-      
-   
-   
+        if(_checkServerListThread.AddNewConnectSession(AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR) { 
+            _checkServerListThread.ShutdownInternalThread();
+        }
+      }
+   }
+
    PostMessage(CHATWINDOW_COMMAND_UPDATE_COLORS);
 
    const char * tempFontString;
@@ -2968,15 +2955,14 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                   MessageRef pmsg = GetMessageFromPool();
                   if (pmsg())
                   { 
-                  if (servertest==0){
-                     pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
-                     _checkServerListThread.SendMessageToSessions(pmsg);
-                  }
-                  if (servertest==1){
-                     pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "SECOND_AUTO_UPDATER_SERVER"\n\n");
-                     _checkServerListThread.SendMessageToSessions(pmsg);
-                  }
-                  
+                    if (servertest==0){
+                      pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
+                      _checkServerListThread.SendMessageToSessions(pmsg);
+                    }
+                    if (servertest==1){
+                      pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "SECOND_AUTO_UPDATER_SERVER"\n\n");
+                      _checkServerListThread.SendMessageToSessions(pmsg);
+                    }
                   }
                }
                break;
@@ -2984,27 +2970,20 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                // We get this when the HTTP server closes the session... here we can clean up
                case MTT_EVENT_SESSION_DETACHED:
                if (servertest==1){  
-                          
                   _checkServerListThread.ShutdownInternalThread();
-				}
-				
+                }
+                
                if (servertest==0){
-               servertest=1;
-               
+                 servertest=1;
 
-       			AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
-      			plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
-      	
-      			
-      				
-      					if(_checkServerListThread.AddNewConnectSession(SECOND_AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)
-      	 			{ 
-      	 			
-      				_checkServerListThread.ShutdownInternalThread();      	
-      				}
-      	 		
+                  AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
+                  plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
+
+                 if(_checkServerListThread.AddNewConnectSession(SECOND_AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR){
+                   _checkServerListThread.ShutdownInternalThread();        
+                 }
                }
-               
+
                break;
             }
          }
@@ -3287,11 +3266,11 @@ void ShareWindow :: MessageReceived(BMessage * msg)
       
        case SHAREWINDOW_COMMAND_REQUEST_INFO:
       {
-		BMessage filelistMsg;
-		int32 nextIndex;
-		for (int32 i=0; ((nextIndex =_resultsView->CurrentSelection(i)) >= 0); i++)
-			filelistMsg.AddPointer("item", _resultsView->ItemAt(nextIndex));
-		RemoteInfo::ShowInfo(filelistMsg);
+        BMessage filelistMsg;
+        int32 nextIndex;
+        for (int32 i=0; ((nextIndex =_resultsView->CurrentSelection(i)) >= 0); i++)
+            filelistMsg.AddPointer("item", _resultsView->ItemAt(nextIndex));
+        RemoteInfo::ShowInfo(filelistMsg);
       }
       break;
 

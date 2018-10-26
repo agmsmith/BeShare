@@ -1170,21 +1170,21 @@ ChatWindow :: GetAppSubdir(const char * subDirName, BDirectory & subDir, bool cr
 
 //// Revision for HaikuPM to put folders in home rather than (read-only!) app folder ////
 
-	BDirectory appDir("/boot/home/BeShare");	// Common base directory for PM
-	if (appDir.InitCheck() != B_OK)			// assume we always want this to exist
-		BDirectory("/boot/home").CreateDirectory("BeShare", &appDir);
+    BDirectory appDir("/boot/home/BeShare");    // Common base directory for PM
+    if (appDir.InitCheck() != B_OK)         // assume we always want this to exist
+        BDirectory("/boot/home").CreateDirectory("BeShare", &appDir);
 
-	// If the directory is already there, use it
-	BPath path(&appDir, subDirName);
-	if (subDir.SetTo(path.Path()) == B_OK) return B_OK;
+    // If the directory is already there, use it
+    BPath path(&appDir, subDirName);
+    if (subDir.SetTo(path.Path()) == B_OK) return B_OK;
 
-	// Directory not there?  Shall we create it then?
-	if (createIfNecessary)
-	{
-		if (appDir.CreateDirectory(subDirName, &subDir) == B_OK)
-			 return B_OK;
-	}
-	return B_ERROR;  // oops, couldn't get it
+    // Directory not there?  Shall we create it then?
+    if (createIfNecessary)
+    {
+        if (appDir.CreateDirectory(subDirName, &subDir) == B_OK)
+             return B_OK;
+    }
+    return B_ERROR;  // oops, couldn't get it
 }
 
 void ChatWindow :: CloseLogFile()

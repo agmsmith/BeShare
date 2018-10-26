@@ -37,5 +37,3 @@ filechopper : filechopper.o
 
 clean :
 	rm -f *.o *.xSYM $(EXECUTABLES)
-
-	
