@@ -17,7 +17,7 @@
 #  include <windows.h>
 # elif defined(QT_THREAD_SUPPORT)
 #  include <qthread.h>
-# elif defined(__BEOS__)
+# elif defined(__BEOS__) || defined(__HAIKU__)
 #  include <support/Locker.h>
 # elif defined(__ATHEOS__)
 #  include <util/locker.h>
@@ -95,7 +95,7 @@ public:
 # elif defined(QT_THREAD_SUPPORT)
       _locker.lock();
       return B_NO_ERROR;
-# elif defined(__BEOS__)
+# elif defined(__BEOS__) || defined(__HAIKU__)
       return _locker.Lock() ? B_NO_ERROR : B_ERROR;
 # elif defined(__ATHEOS__)
       return _locker.Lock() ? B_ERROR : B_NO_ERROR;  // Is this correct?  Kurt's documentation sucks
@@ -121,7 +121,7 @@ public:
 # elif defined(QT_THREAD_SUPPORT)
       _locker.unlock();
       return B_NO_ERROR;
-# elif defined(__BEOS__)
+# elif defined(__BEOS__) || defined(__HAIKU__)
       _locker.Unlock();
       return B_NO_ERROR;
 # elif defined(__ATHEOS__)
@@ -160,7 +160,7 @@ private:
    mutable HANDLE _locker;
 # elif defined(QT_THREAD_SUPPORT)
    mutable QMutex _locker;
-# elif defined(__BEOS__)
+# elif defined(__BEOS__) || defined(__HAIKU__)
    mutable BLocker _locker;
 # elif defined(__ATHEOS__)
    mutable os::Locker _locker;

@@ -100,7 +100,7 @@ status_t Thread :: StartInternalThreadAux()
       waitCondition.wait(&mutex);  // wait until the internal thread signal us that it's okay to continue
       mutex.unlock();
       return B_NO_ERROR;
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
       if ((_thread = spawn_thread(InternalThreadEntryFunc, "MUSCLE Thread", B_NORMAL_PRIORITY, this)) >= 0)
       {
          if (resume_thread(_thread) == B_NO_ERROR) return B_NO_ERROR;
@@ -128,7 +128,7 @@ bool Thread :: IsCallerInternalThread() const
    return (_threadID == GetCurrentThreadId());
 #elif defined(QT_THREAD_SUPPORT)
    return (QThread::currentThread() == _internalThreadHandle);
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
    return (_thread == find_thread(NULL));
 #elif defined(__ATHEOS__)
    return (_thread == find_thread(NULL));
@@ -310,7 +310,7 @@ status_t Thread :: WaitForInternalThreadToExit()
       ::CloseHandle(_thread);  // Raymond Dahlberg's fix for handle-leak problem
 #elif defined(QT_THREAD_SUPPORT)
       (void) _thread.wait();
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
       status_t junk;
       (void) wait_for_thread(_thread, &junk);
 #elif defined(__ATHEOS__)

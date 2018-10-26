@@ -653,7 +653,9 @@ status_t ReflectServer :: ClearLameDucks()
          {
             duck->AboutToDetachFromServer();
             duck->DoOutput(MUSCLE_NO_LIMIT);  // one last chance for him to send any leftover data!
-            if (_doLogging) LogTime(MUSCLE_LOG_DEBUG, "Closed %s (%lu left)\n", duck->GetSessionDescriptionString()(), _sessions.GetNumItems()-1);
+            if (_doLogging) {
+              LogTime(MUSCLE_LOG_DEBUG, "Closed %s (%lu left)\n", duck->GetSessionDescriptionString()(), _sessions.GetNumItems()-1);
+            }
             duck->_owner = NULL;
             (void) _sessions.Remove(id);
          }

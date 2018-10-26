@@ -51,8 +51,8 @@ int main(void)
       }
    }
 
-#ifdef __BEOS__
-   printf("NOTE:  USING BeOS-provided swap functions!\n");
+#if defined(__BEOS__) || defined(__HAIKU__)
+   printf("NOTE:  USING BeOS/Haiku-provided swap functions!\n");
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
    printf("NOTE:  USING PowerPC inline assembly swap functions!\n");
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)

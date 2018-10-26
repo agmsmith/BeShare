@@ -350,6 +350,9 @@ status_t RS232DataIO :: GetAvailableSerialPortNames(Queue<String> & retList)
 #  if defined(__BEOS__)
       sprintf(buf, "/dev/ports/serial%i", i+1);
       int temp = open(buf, O_RDWR | O_NONBLOCK);
+#  elif defined(__HAIKU__)
+      sprintf(buf, "/dev/ports/pc_serial%i", i+1);
+      int temp = open(buf, O_RDWR | O_NOCTTY);
 #  else
       sprintf(buf, "/dev/ttyS%i", i);
       int temp = open(buf, O_RDWR | O_NOCTTY);

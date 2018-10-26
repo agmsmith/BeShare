@@ -1,11 +1,11 @@
 # compilation flags used under any OS or compiler (may be appended to, below) 
-CXXFLAGS   += -I.. -DMUSCLE_SINGLE_THREAD_ONLY -DMUSCLE_ENABLE_ZLIB_ENCODING 
+CXXFLAGS   += -I.. -DMUSCLE_SINGLE_THREAD_ONLY -DMUSCLE_ENABLE_ZLIB_ENCODING
 
 # compilation flags that are specific to the gcc compiler (hard-coded) 
 GCCFLAGS    = -fno-exceptions -DMUSCLE_NO_EXCEPTIONS -Wall -W -Wno-multichar 
 
 # flags to include when compiling the optimized version (with 'make') 
-CCOPTFLAGS  = -O3 
+CCOPTFLAGS  = -O2
 
 # flags to include when linking (set per operating system, below) 
 LFLAGS      = 
@@ -45,18 +45,23 @@ ifeq ($(OSTYPE),beos)
       MEMORY_TRACKING_SUPPORTED = no  # mwcc can't handle it correctly :^( 
    else # not ppc 
       CXXFLAGS += $(GCCFLAGS) $(CCOPTFLAGS) 
-      LIBS = -lbe -lnet -lroot 
+      LIBS = -lbe -lnetwork -lroot 
       ifeq ($(shell ls 2>/dev/null -1 /boot/develop/headers/be/bone/bone_api.h), /boot/develop/headers/be/bone/bone_api.h) 
          CXXFLAGS += -I/boot/develop/headers/be/bone -DBONE 
          LIBS = -nodefaultlibs -lbind -lsocket -lbe -lroot -L/boot/beos/system/lib 
       endif 
    endif 
 else # not beos 
-    ifneq (,$(findstring g++,$(CXX)))
-	# not using g++ don't need $GCCFLAGS
-	CXXFLAGS += $(CCOPTFLAGS)
+    ifeq ($(OSTYPE),Haiku)
+      CXXFLAGS += $(GCCFLAGS) $(CCOPTFLAGS) 
+      LIBS = -lbe -lnetwork
     else
-	CXXFLAGS += $(GCCFLAGS) $(CCOPTFLAGS)
+        ifneq (,$(findstring g++,$(CXX)))
+          # not using g++ don't need $GCCFLAGS
+          CXXFLAGS += $(CCOPTFLAGS)
+        else
+          CXXFLAGS += $(GCCFLAGS) $(CCOPTFLAGS)
+        endif
     endif
 endif 
 
@@ -103,5 +108,5 @@ admin : Message.o AbstractMessageIOGateway.o MessageIOGateway.o String.o Network
 	$(CXX) $(LIBS) $(LFLAGS) -o $@ $^ 
 
 clean : 
-	rm -f *.o *.xSYM $(EXECUTABLES)
+	rm -fv *.o *.xSYM $(EXECUTABLES)
 

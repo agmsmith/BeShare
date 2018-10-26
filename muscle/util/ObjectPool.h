@@ -213,7 +213,7 @@ public:
    * @param userData User value that will be passed through to the callback function.
    * @returns B_NO_ERROR on success, B_ERROR if it couldn't lock its lock for some reason.
    */
-   status_t SetRecycleObjectCallback(ObjectCallback cb, void * userData)
+   void SetRecycleObjectCallback(ObjectCallback cb, void * userData)
    {
       if (_mutex.Lock() == B_NO_ERROR)
       {

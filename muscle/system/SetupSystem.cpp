@@ -10,7 +10,7 @@
 # include <winsock.h>
 # include <signal.h>
 #else
-# if defined(__BEOS__)
+# if defined(__BEOS__) || defined(__HAIKU__)
 #  include <signal.h>
 # elif defined(__CYGWIN__)
 #  include <signal.h>
@@ -139,7 +139,7 @@ static inline uint32 get_tbu() {uint32 tbu; asm volatile("mftbu %0" : "=r" (tbu)
 #endif
 
 // For BeOS, this is an in-line function, defined in util/TimeUtilityFunctions.h
-#ifndef __BEOS__
+#if !defined(__BEOS__) && !defined(__HAIKU__)
 
 /** Defined here since every MUSCLE program will have to include this file anyway... */
 uint64 GetRunTime64()
@@ -257,7 +257,7 @@ uint64 GetCurrentTime64(uint32 timeType)
    if (timeType == MUSCLE_TIMEZONE_LOCAL) (void) FileTimeToLocalFileTime(&ft, &ft);
    return __Win32FileTimeToMuscleTime(ft);
 #else
-# ifdef __BEOS__
+# if defined(__BEOS__) || defined(__HAIKU__)
    uint64 ret = real_time_clock_usecs();
 # else
    struct timeval tv;

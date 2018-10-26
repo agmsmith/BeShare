@@ -14,7 +14,7 @@
 # ifndef MUSCLE_SINGLE_THREAD_ONLY
 #  if defined(__ATHEOS__)
 #   include <atheos/atomic.h>
-#  elif defined(__BEOS__)
+#  elif defined(__BEOS__) || defined(__HAIKU__)
 #   include <kernel/OS.h>
 #  elif defined(WIN32)
 #   include <windows.h>
@@ -78,7 +78,7 @@ public:
 # endif
 #elif defined(__ATHEOS__) 
       (void) atomic_add(&_count,1);
-#elif defined(__BEOS__) 
+#elif defined(__BEOS__) || defined(__HAIKU__)
       (void) atomic_add(&_count,1);
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
       volatile int * p = &_count;
@@ -129,7 +129,7 @@ public:
 # endif
 #elif defined(__ATHEOS__) 
       return (atomic_add(&_count,-1)==1);
-#elif defined(__BEOS__) 
+#elif defined(__BEOS__) || defined(__HAIKU__)
       return (atomic_add(&_count,-1)==1);
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
       volatile int * p = &_count;
@@ -188,9 +188,7 @@ private:
 # else
    long _count;
 # endif
-#elif defined(__HAIKU__)
-   int32 _count;
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
 # if defined(B_BEOS_VERSION_5)
    vint32 _count;
 # else

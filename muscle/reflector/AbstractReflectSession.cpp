@@ -8,10 +8,6 @@
 #include "system/Mutex.h"
 #include "system/SetupSystem.h"
 
-#       ifndef closesocket
-#               define closesocket(fd)  close(fd)
-#       endif
-
 BEGIN_NAMESPACE(muscle);
 
 static uint32 _idCounter = 0L;

@@ -42,7 +42,7 @@ BEGIN_NAMESPACE(muscle);
 
 static int ptym_open(char *pts_name)
 {
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
    strcpy(pts_name, "/dev/pt/");
 #else
    strcpy(pts_name, "/dev/pty");

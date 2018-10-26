@@ -111,7 +111,7 @@ using std::set_new_handler;
 #endif
 
 /* Unfortunately, the 64-bit printf() format specifier is different for different compilers :^P */
-#if defined(__MWERKS__) || defined(WIN32) || defined(__BORLANDC__) || defined(__BEOS__)
+#if defined(__MWERKS__) || defined(WIN32) || defined(__BORLANDC__) || defined(__BEOS__) || defined(__HAIKU__)
 # if (_MSC_VER == 1200)
 #  define  INT64_FORMAT_SPEC "%I64i"
 #  define UINT64_FORMAT_SPEC "%I64u"
@@ -124,7 +124,7 @@ using std::set_new_handler;
 #  define UINT64_FORMAT_SPEC "%llu"
 #endif
 
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 # include <kernel/debugger.h>
 # define MCRASH_IMPL debugger("muscle assertion failure")
 #elif defined(WIN32)
@@ -158,12 +158,12 @@ using std::set_new_handler;
 
 typedef void * muscleVoidPointer;  /* it's a bit easier, syntax-wise, to use this type than (void *) directly in some cases. */
 
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 # include <support/Errors.h>
 # include <support/ByteOrder.h>  /* might as well use the real thing (and avoid complaints about duplication) */
 # include <support/SupportDefs.h>
 # include <support/TypeConstants.h>
-# ifdef BONE
+# if defined(BONE) || defined(__HAIKU__)
 #  define closesocket close
 # else
 #  define BEOS_OLD_NETSERVER
@@ -214,7 +214,7 @@ typedef void * muscleVoidPointer;  /* it's a bit easier, syntax-wise, to use thi
                      (((unsigned long)(x[2])) <<  8) | \
                      (((unsigned long)(x[3])) <<  0))
 
-#ifndef __BEOS__
+#if !defined(__BEOS__) && !defined(__HAIKU__)
 /* Be-style message-field type codes.
  * I've calculated the integer equivalents for these codes
  * because gcc whines like a little girl about the four-byte
@@ -349,7 +349,7 @@ template<typename T> inline int muscleSgn(const T & arg) {return (arg<0)?-1:((ar
 
 #endif  /* __cplusplus */
 
-#ifndef __BEOS__
+#if !defined(__BEOS__) && !defined(__HAIKU__)
 
 /*
  * Copyright(c) 1983,   1989

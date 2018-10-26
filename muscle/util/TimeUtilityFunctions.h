@@ -11,7 +11,7 @@
 # include <sys/time.h>
 #endif
 
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 # include <kernel/OS.h>
 #endif
 
@@ -103,7 +103,7 @@ uint64 GetCurrentTime64(uint32 timeType=MUSCLE_TIMEZONE_UTC);
  *  (i.e. how much time has passed between two events).  For a "wall clock" type of result with
  *  a well-defined time-base, you can call GetCurrentTime64() instead.
  */
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 inline uint64 GetRunTime64() {return system_time();}
 #else
 uint64 GetRunTime64();

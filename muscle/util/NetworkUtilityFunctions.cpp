@@ -4,7 +4,7 @@
 
 #include "util/NetworkUtilityFunctions.h"
 
-#if __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 # include <kernel/OS.h>     // for snooze()
 #elif __ATHEOS__
 # include <atheos/kernel.h> // for snooze()
@@ -28,13 +28,6 @@
 #  include <netinet/tcp.h>
 #  include <netinet/in.h>
 # endif
-#endif
-
-#ifdef __HAIKU__
-#include <arpa/inet.h>	// quickie fix
-#       ifndef closesocket
-#               define closesocket(fd)  close(fd)
-#       endif
 #endif
 
 #include <string.h>
@@ -467,7 +460,7 @@ status_t SetSocketNaglesAlgorithmEnabled(int sock, bool enabled)
 
 status_t Snooze64(uint64 micros)
 {
-#if __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
    return snooze(micros);
 #elif __ATHEOS__
    return (snooze(micros) >= 0) ? B_NO_ERROR : B_ERROR;

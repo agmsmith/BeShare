@@ -7,7 +7,7 @@
 #include "util/RefCount.h"
 #include "util/String.h"
 
-#ifdef __BEOS__
+#if defined(__BEOS__) || defined(__HAIKU__)
 # if __POWERPC__
 #  include "regex/regex/regex.h"  // use included regex if system doesn't provide one
 # else

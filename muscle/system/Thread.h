@@ -19,7 +19,7 @@
 # if QT_VERSION >= 0x030200
 #  define QT_HAS_THREAD_PRIORITIES
 # endif
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
 # include <kernel/OS.h>
 #elif defined(__ATHEOS__)
 # include <atheos/threads.h>
@@ -397,7 +397,7 @@ protected:
 #endif
 
 private:
-#elif defined(__BEOS__)
+#elif defined(__BEOS__) || defined(__HAIKU__)
    thread_id _thread;
    static int32 InternalThreadEntryFunc(void * This) {((Thread *)This)->InternalThreadEntryAux(); return 0;}
 #elif defined(__ATHEOS__)

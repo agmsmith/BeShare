@@ -7,7 +7,7 @@
 #include "util/String.h"
 
 #ifndef MUSCLE_DEBUG_TIMER_CLOCK
-# if defined(__BEOS__) || defined(__ATHEOS__) || defined(WIN32)
+# if defined(__BEOS__) || defined(__HAIKU__) || defined(__ATHEOS__) || defined(WIN32)
 #  define MUSCLE_DEBUG_TIMER_CLOCK GetRunTime64()
 # else
 #  define MUSCLE_DEBUG_TIMER_CLOCK GetCurrentTime64()   /* POSIX API's run-time clock has crappy resolution :^( */
