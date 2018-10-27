@@ -35,7 +35,7 @@ ZLibCodec :: ~ZLibCodec()
    if (_inflateOkay)
    {
       inflateEnd(&_inflater);
-      _inflateOkay = _inflateOkay = false;
+      _inflateOkay = false;
    }
    if (_deflateOkay)
    {

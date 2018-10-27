@@ -628,7 +628,7 @@ String String :: ArgAux(const char * buf) const
    if (lowestArg >= 0)
    {
       char token[64];
-      sprintf(token, "%%%li", lowestArg);
+      sprintf(token, "%%%li", (long) lowestArg);
       String ret(*this);
       (void) ret.Replace(token, buf);
       return ret;

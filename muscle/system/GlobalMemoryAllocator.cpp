@@ -89,11 +89,11 @@ status_t MemoryParanoiaCheckBuffer(void * userPtr, bool crashIfInvalid)
             printf("MEMORY GUARD CORRUPTION (%i words after rear):   buffer (%p,%u) (userptr=%p,%u) expected %p, got %p!\n", i+1, internalPtr, *internalPtr, userPtr, userBufLen, expectedRearVal, rearRead[i]);
          }
       }
-      if (foundCorruption) 
+      if (foundCorruption)
       {
          printf("CORRUPTED MEMORY BUFFER CONTENTS ARE (including %i front-guards and %i rear-guards of %u bytes each):\n", MUSCLE_ENABLE_MEMORY_PARANOIA, MUSCLE_ENABLE_MEMORY_PARANOIA, sizeof(size_t *));
          for (size_t i=0; i<*internalPtr; i++) printf("%02x ", ((char *)internalPtr)[i]); printf("\n");
-         if (crashIfInvalid) 
+         if (crashIfInvalid)
          {
             fflush(stdout);
             MCRASH("MEMORY PARANOIA:  MEMORY CORRUPTION DETECTED!");
@@ -108,7 +108,7 @@ static void MemoryParanoiaPrepareBuffer(size_t * internalPtr, uint32 oldSize)
 {
    size_t ** frontWrite = CONVERT_INTERNAL_TO_FRONT_GUARD(internalPtr);
    size_t ** rearWrite  = CONVERT_INTERNAL_TO_REAR_GUARD(internalPtr);
-   for (int i=0; i<MUSCLE_ENABLE_MEMORY_PARANOIA; i++) 
+   for (int i=0; i<MUSCLE_ENABLE_MEMORY_PARANOIA; i++)
    {
       frontWrite[i] = internalPtr+i;
       rearWrite[i]  = internalPtr+i+MUSCLE_ENABLE_MEMORY_PARANOIA;
@@ -172,9 +172,9 @@ void * muscleAlloc(size_t userSize, bool retryOnFailure)
       }
       else mallocFailed = true;
    }
-   if ((ma)&&(userPtr == NULL)) 
+   if ((ma)&&(userPtr == NULL))
    {
-      printf("muscleAlloc:  allocation failure (tried to allocate %lu internal bytes / %lu user bytes)\n", (uint32)internalSize, (uint32)userSize);
+      printf("muscleAlloc:  allocation failure (tried to allocate %lu internal bytes / %lu user bytes)\n", (unsigned long) internalSize, (unsigned long) userSize);
 
       ma->SetAllocationHasFailed(true);
       ma->AllocationFailed(_currentlyAllocatedBytes, internalSize);
@@ -218,7 +218,7 @@ void * muscleRealloc(void * oldUserPtr, size_t newUserSize, bool retryOnFailure)
 
 #ifndef MUSCLE_SINGLE_THREAD_ONLY
    Mutex * glock = ma ? GetGlobalMuscleLock() : NULL;
-   if ((glock)&&(glock->Lock() != B_NO_ERROR)) 
+   if ((glock)&&(glock->Lock() != B_NO_ERROR))
    {
       printf("Error, muscleRealloc() couldn't lock the global muscle lock!\n");
       return NULL;  // serialize access to (ma)
@@ -245,9 +245,9 @@ void * muscleRealloc(void * oldUserPtr, size_t newUserSize, bool retryOnFailure)
          }
          else reallocFailed = true;
       }
-      if ((ma)&&(newUserPtr == NULL)) 
+      if ((ma)&&(newUserPtr == NULL))
       {
-         printf("muscleRealloc:  reallocation failure (tried to grow %lu->%lu internal bytes / %lu->%lu user bytes))\n", (uint32)oldInternalSize, (uint32)newInternalSize, (uint32)oldUserSize, (uint32)newUserSize);
+         printf("muscleRealloc:  reallocation failure (tried to grow %lu->%lu internal bytes / %lu->%lu user bytes))\n", (unsigned long) oldInternalSize, (unsigned long) newInternalSize, (unsigned long) oldUserSize, (unsigned long) newUserSize);
          fflush(stdout);  // make sure this message gets out!
 
          ma->SetAllocationHasFailed(true);
@@ -274,10 +274,10 @@ void * muscleRealloc(void * oldUserPtr, size_t newUserSize, bool retryOnFailure)
 #endif
          newUserPtr = CONVERT_INTERNAL_TO_USER_POINTER(newInternalPtr);
       }
-      else 
+      else
       {
          newUserPtr = oldUserPtr;  // I guess the best thing to do is just send back the old pointer?  Not sure what to do here.
-         printf("muscleRealloc:  reallocation failure (tried to shrink %lu->%lu internal bytes / %lu->%lu user bytes))\n", (uint32)oldInternalSize, (uint32)newInternalSize, (uint32)oldUserSize, (uint32)newUserSize);
+         printf("muscleRealloc:  reallocation failure (tried to shrink %lu->%lu internal bytes / %lu->%lu user bytes))\n", (unsigned long) oldInternalSize, (unsigned long) newInternalSize, (unsigned long) oldUserSize, (unsigned long) newUserSize);
          fflush(stdout);  // make sure this message gets out!
       }
    }
@@ -303,7 +303,7 @@ void muscleFree(void * userPtr)
 
 #ifndef MUSCLE_SINGLE_THREAD_ONLY
       Mutex * glock = ma ? GetGlobalMuscleLock() : NULL;
-      if ((glock)&&(glock->Lock() != B_NO_ERROR)) 
+      if ((glock)&&(glock->Lock() != B_NO_ERROR))
       {
          printf("Error, muscleFree() couldn't lock the global muscle lock!!!\n");
          return;  // serialize access to (ma)
@@ -355,7 +355,9 @@ void * operator new[](size_t s, nothrow_t const &) THROW LPAREN RPAREN {USING_NA
 # endif
 
 void operator delete(  void * p) THROW LPAREN RPAREN {USING_NAMESPACE(muscle); muscleFree(p);}
+void operator delete(  void * p, size_t s) THROW LPAREN RPAREN {USING_NAMESPACE(muscle); (void) s; muscleFree(p);}
 void operator delete[](void * p) THROW LPAREN RPAREN {USING_NAMESPACE(muscle); muscleFree(p);}
+void operator delete[](void * p, size_t s) THROW LPAREN RPAREN {USING_NAMESPACE(muscle); (void) s; muscleFree(p);}
 
 #else
 # if MUSCLE_ENABLE_MEMORY_PARANOIA > 0

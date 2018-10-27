@@ -58,8 +58,8 @@ void Require(MessageIOGateway & gw, const char * arg, bool unRequire)
 int main(int argc, char ** argv)
 {
    CompleteSetupSystem css;
-
-   char * hostName = "localhost";
+   static char LocalHost[] = "localhost";
+   char * hostName = LocalHost;
 
    // First, find out if there is a server specified.
    for (int i=1; i<argc; i++)

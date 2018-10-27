@@ -449,7 +449,7 @@ status_t Flattenable :: CopyFromImplementation(const Flattenable & copyFrom)
 
 void Inet_NtoA(uint32 addr, char * ipbuf)
 {
-   sprintf(ipbuf, "%li.%li.%li.%li", (addr>>24)&0xFF, (addr>>16)&0xFF, (addr>>8)&0xFF, (addr>>0)&0xFF);
+   sprintf(ipbuf, "%li.%li.%li.%li", (long) (addr>>24)&0xFF, (long) (addr>>16)&0xFF, (long) (addr>>8)&0xFF, (long) (addr>>0)&0xFF);
 }
 
 uint32 Inet_AtoN(const char * buf)

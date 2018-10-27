@@ -285,7 +285,11 @@ status_t RawDataQueryFilter :: SaveToArchive(Message & archive) const
 status_t RawDataQueryFilter :: SetFromArchive(const Message & archive)
 {
    if ((ValueQueryFilter::SetFromArchive(archive) != B_NO_ERROR)||(archive.FindInt8("op", (int8*)&_op) != B_NO_ERROR)) return B_ERROR;
-   if (archive.FindInt32("type", (int32*)_typeCode) != B_NO_ERROR) _typeCode = B_ANY_TYPE;
+   int32 codeRead = B_ANY_TYPE;
+   if (archive.FindInt32("type", &codeRead) != B_NO_ERROR)
+     _typeCode = B_ANY_TYPE;
+   else
+     _typeCode = codeRead;
 
    _value.Reset();
    const uint8 * data;
@@ -354,20 +358,15 @@ bool RawDataQueryFilter :: Matches(const Message & msg, const DataNode *) const
 
 const uint8 * RawDataQueryFilter :: Memmem(const uint8 * lookIn, uint32 numLookInBytes, const uint8 * lookFor, uint32 numLookForBytes) const
 {
-        if (numLookForBytes == 0)              return lookIn;  // hmm, existential questions here
-   else if (numLookForBytes == numLookInBytes) return (const uint8 *)memcmp(lookIn, lookFor, numLookInBytes);
+   if (numLookForBytes == 0) return lookIn;  // hmm, existential questions here
+   else if (numLookForBytes == numLookInBytes) return (memcmp(lookIn, lookFor, numLookInBytes) == 0) ? lookIn : NULL;
    else if (numLookForBytes < numLookInBytes)
    {
-      const uint8 * startedAt = lookIn;
-      uint32 matchCount = 0;
-      for (uint32 i=0; i<numLookInBytes; i++)
+      uint32 scanLength = (1+numLookInBytes-numLookForBytes);
+      for (uint32 i=0; i<scanLength; i++)
       {
-         if (lookIn[i] == lookFor[matchCount])
-         {
-            if (matchCount == 0) startedAt = &lookIn[i];
-            if (++matchCount == numLookForBytes) return startedAt;
-         }
-         else matchCount = 0;
+         const uint8 * li = &lookIn[i];
+         if ((*li == *lookFor)&&(memcmp(li, lookFor, numLookForBytes) == 0)) return li;  // FogBugz #9877
       }
    }
    return NULL;

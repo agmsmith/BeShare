@@ -374,7 +374,7 @@ NodeIndexChanged(DataNode & modifiedNode, char op, uint32 index, const char * ke
       {
          _sharedData->_subsDirty = true;
          char temp[100];
-         sprintf(temp, "%c%lu:%s", op, index, key);
+         sprintf(temp, "%c%lu:%s", op, (unsigned long) index, key);
          _nextIndexSubscriptionMessage()->AddString(np, temp);
       }
       else WARN_OUT_OF_MEMORY;
@@ -1272,7 +1272,7 @@ GetDataCallback(DataNode & node, void * userData)
             for (uint32 i=0; i<indexLen; i++) 
             {
                char temp[100];
-               sprintf(temp, "%c%lu:%s", INDEX_OP_ENTRYINSERTED, i, (*index)[i]);
+               sprintf(temp, "%c%lu:%s", INDEX_OP_ENTRYINSERTED, (unsigned long) i, (*index)[i]);
                (void) indexUpdateMsg()->AddString(np, temp);
             }
             if (indexUpdateMsg()->CountNames() >= _maxSubscriptionMessageItems) SendGetDataResults(messageArray[1]);

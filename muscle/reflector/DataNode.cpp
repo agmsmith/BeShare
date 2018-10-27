@@ -78,7 +78,7 @@ status_t DataNode :: InsertOrderedChild(const MessageRef & data, const char * op
    {
       while(true)
       {
-         sprintf(temp, "I%lu", _orderedCounter++);
+         sprintf(temp, "I%lu", (unsigned long) _orderedCounter++);
          if (HasChild(temp) == false) break;
       }
    }
@@ -313,7 +313,7 @@ status_t DataNode :: GetNodePath(String & retPath, uint32 startDepth) const
    return B_NO_ERROR;
 }
 
-status_t DataNode ::   RemoveChild(const char * key, StorageReflectSession * optNotifyWith, bool recurse, uint32 * optCurrentNodeCount)
+status_t DataNode :: RemoveChild(const char * key, StorageReflectSession * optNotifyWith, bool recurse, uint32 * optCurrentNodeCount)
 {
    TCHECKPOINT;
 
@@ -328,7 +328,7 @@ status_t DataNode ::   RemoveChild(const char * key, StorageReflectSession * opt
             while(child->CountChildren() > 0)
             {
                DataNodeRefIterator it = child->GetChildIterator();
-               const char * name;
+               const char * name = NULL;
                it.GetNextKey(name);
                child->RemoveChild(name, optNotifyWith, recurse, optCurrentNodeCount);
             }
