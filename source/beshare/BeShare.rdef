@@ -8,13 +8,13 @@ resource app_flags B_MULTIPLE_LAUNCH;
 resource app_version {
 	major  = 3,
 	middle = 0,
-	minor  = 0,
+	minor  = 3,
 
 	variety = B_APPV_BETA,
 	internal = 0,
 
 	short_info = "BeShare",
-	long_info = "BeShare -- file sharing and chat ©1999-2015"
+	long_info = "BeShare -- file sharing and chat ©1999-2018"
 };
 
 resource large_icon array {

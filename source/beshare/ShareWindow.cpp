@@ -64,19 +64,9 @@
 #include "RemoteInfo.h"
 #include "ColorPicker.h"
 
-//#define DEBUG true
-
-#define ZDPRINTF(x)
-#ifdef DEBUG
- #include <stdio.h>
- #define DPRINTF(x) printf x
-#else
- #define DPRINTF(x)
-#endif
-
-
 namespace beshare {
-    int servertest = 0;
+
+static int g_servertest = 0;
 
 static String RemoveSpecialQueryChars(const String & localString)
 {
@@ -1629,7 +1619,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    // Start a thread to see if there are any new servers around
    if (_autoUpdateServers->IsMarked())
    {
-        servertest=0;
+      g_servertest = 0;
       AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
       plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
       if (_checkServerListThread.StartInternalThread() == B_NO_ERROR)
@@ -2955,11 +2945,13 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                   MessageRef pmsg = GetMessageFromPool();
                   if (pmsg())
                   { 
-                    if (servertest==0){
+                    if (g_servertest == 0)
+                    {
                       pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
                       _checkServerListThread.SendMessageToSessions(pmsg);
                     }
-                    if (servertest==1){
+                    if (g_servertest == 1)
+                    {
                       pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "SECOND_AUTO_UPDATER_SERVER"\n\n");
                       _checkServerListThread.SendMessageToSessions(pmsg);
                     }
@@ -2969,21 +2961,23 @@ void ShareWindow :: MessageReceived(BMessage * msg)
 
                // We get this when the HTTP server closes the session... here we can clean up
                case MTT_EVENT_SESSION_DETACHED:
-               if (servertest==1){  
+               if (g_servertest == 1)
+               {  
                   _checkServerListThread.ShutdownInternalThread();
-                }
+               }
                 
-               if (servertest==0){
-                 servertest=1;
+               if (g_servertest == 0)
+               {
+                  g_servertest = 1;
 
                   AbstractReflectSessionRef plainSessionRef(new ThreadWorkerSession());
                   plainSessionRef()->SetGateway(AbstractMessageIOGatewayRef(new PlainTextMessageIOGateway));
 
-                 if(_checkServerListThread.AddNewConnectSession(SECOND_AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR){
-                   _checkServerListThread.ShutdownInternalThread();        
-                 }
+                  if(_checkServerListThread.AddNewConnectSession(SECOND_AUTO_UPDATER_SERVER, 80, plainSessionRef) != B_NO_ERROR)
+                  {
+                     _checkServerListThread.ShutdownInternalThread();        
+                  }
                }
-
                break;
             }
          }
@@ -3141,19 +3135,19 @@ void ShareWindow :: MessageReceived(BMessage * msg)
 
       case SHAREWINDOW_COMMAND_ABOUT:
       {
-         char temp[200];
-//         sprintf(temp, "BeShare v%s\n%s Jeremy Friesner\njaf@lcsaudio.com\n\n%s Vitaliy Mikitchenko", VERSION_STRING, str(STR_BY), str(STR_COLOR_PREFS_BY));
-         sprintf(temp, "BeShare v%s (%s)\n%s Jeremy Friesner (jaf@lcsaudio.com) et al.\n\n", VERSION_STRING, VERSION_DATE, str(STR_BY));
-//         const char * url = NULL;
-         // Link options suppressed until confusions can be resolved...
-         (new BAlert("About BeShare", temp, "Okay"))->Go();
-//         switch((new BAlert("About BeShare", temp, "BeBits Page", "BeShare Page", "Okay"))->Go())
-//         {
-//            case 0: url = BESHARE_BEBITS_URL;   break;
-//            case 1: url = BESHARE_HOMEPAGE_URL; break;
-//         }
-
-//         if (url) be_roster->Launch("text/html", 1, (char**) &url);
+         char temp[512];
+         sprintf(temp, "BeShare v%s\n"
+            "%s Jeremy Friesner\njaf@lcsaudio.com\n\n"
+            "%s Vitaliy Mikitchenko\n"
+            "Updates since 2.28: BBJimmy, Pete, AGMS et al.",
+            VERSION_STRING, str(STR_BY), str(STR_COLOR_PREFS_BY));
+         const char * url = NULL;
+         switch((new BAlert(str(STR_ABOUT_BESHARE), temp, "Muscle Page", "BeShare Page", "Okay"))->Go())
+         {
+            case 0: url = MUSCLE_HOMEPAGE_URL;   break;
+            case 1: url = BESHARE_HOMEPAGE_URL; break;
+         }
+         if (url) be_roster->Launch("text/html", 1, (char**) &url);
       }
       break;
 

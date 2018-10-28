@@ -11,16 +11,6 @@
  #include <interface/IconUtils.h>
 #endif
 
-//#define DEBUG true
-
-#define ZDPRINTF(x)
-#ifdef DEBUG
- #include <stdio.h>
- #define DPRINTF(x) printf x
-#else
- #define DPRINTF(x)
-#endif
-
 namespace beshare {
 
 RemoteFileItem ::
@@ -28,16 +18,16 @@ RemoteFileItem(RemoteUserItem * owner, const char * fileName, const MessageRef &
   : CLVListItem(0, false, false, 18.0f), _owner(owner), _fileName(fileName),
    _attributes(attrs), _iconp(NULL)
 {
-   #ifdef DEBUG
-	printf("\nRemoteFileItem %s, attr:\n", fileName);
-	attrs()->PrintToStream();
-   #endif
+#ifdef DEBUG
+   printf("\nRemoteFileItem %s, attr:\n", fileName);
+   attrs()->PrintToStream();
+#endif
 }
 
 RemoteFileItem ::
 ~RemoteFileItem()
 {
-	delete _iconp;
+   delete _iconp;
 }
 
 void RemoteFileItem::
@@ -65,7 +55,7 @@ DrawItemColumn(BView * clv, BRect itemRect, int32 colIdx, bool complete)
    else if (colIdx == 0)
    {
       const BBitmap * bmp = _owner->GetOwner()->GetBitmap(this, colIdx);
-      if (bmp) 
+      if (bmp)
       {
          clv->SetDrawingMode(B_OP_OVER);
          clv->DrawBitmap(bmp, BPoint(itemRect.left + ((itemRect.Width()-bmp->Bounds().Width())/2.0f), itemRect.top+((itemRect.Height()-bmp->Bounds().Height())/2.0f)));
@@ -86,7 +76,7 @@ Update(BView *owner, const BFont *font)
 
 
 int
-RemoteFileItem :: 
+RemoteFileItem ::
 Compare(const RemoteFileItem * item2, int32 key) const
 {
    return _owner->GetOwner()->Compare(this, item2, key);
@@ -104,24 +94,24 @@ const BBitmap *
 RemoteFileItem ::
 GetIcon()
 {
-	if (_iconp) return _iconp;
-	const void *icondata;
-	uint32 iconsize;
-	#ifdef __HAIKU__
-	if (GetAttributes().FindData("besharez:Vector Icon", 'VICN', &icondata, &iconsize) == B_NO_ERROR)
-	{
-		_iconp = new BBitmap(BRect(0,0,15,15), B_RGBA32);
-		if (_iconp) BIconUtils::GetVectorIcon((const uint8 *)icondata, iconsize, _iconp);
-	}
-	else
-	#endif
-	if (GetAttributes().FindData("besharez:Mini Icon", 'MICN', &icondata, &iconsize) == B_NO_ERROR)
-	{
-   		if (iconsize != 256) return NULL;
-		_iconp = new BBitmap(BRect(0,0,15,15), B_COLOR_8_BIT);
-		if (_iconp) memcpy(_iconp->Bits(), icondata, 256);
-	}
-	return _iconp;
+   if (_iconp) return _iconp;
+   const void *icondata;
+   uint32 iconsize;
+#ifdef __HAIKU__
+   if (GetAttributes().FindData("besharez:Vector Icon", 'VICN', &icondata, &iconsize) == B_NO_ERROR)
+   {
+      _iconp = new BBitmap(BRect(0,0,15,15), B_RGBA32);
+      if (_iconp) BIconUtils::GetVectorIcon((const uint8 *)icondata, iconsize, _iconp);
+   }
+   else
+#endif
+   if (GetAttributes().FindData("besharez:Mini Icon", 'MICN', &icondata, &iconsize) == B_NO_ERROR)
+   {
+      if (iconsize != 256) return NULL;
+      _iconp = new BBitmap(BRect(0,0,15,15), B_COLOR_8_BIT);
+      if (_iconp) memcpy(_iconp->Bits(), icondata, 256);
+   }
+   return _iconp;
 }
 
 const char *

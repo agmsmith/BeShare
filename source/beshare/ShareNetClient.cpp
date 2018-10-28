@@ -23,17 +23,6 @@
 #include "ShareNetClient.h"
 #include "ShareWindow.h"
 
-//#define DEBUG true
-
-#define ZDPRINTF(x)
-#ifdef DEBUG
- #include <stdio.h>
- #define DPRINTF(x) printf x
-#else
- #define DPRINTF(x)
-#endif
-
-
 namespace beshare {
 
 
@@ -556,7 +545,6 @@ NodeCreated(const node_ref & noderef, const entry_ref & entryref)
    BNode parentNode;
    node_ref parentNodeRef;
    WatchedDirData * wdd;
-   DPRINTF(("NodeCreated %s\n", entryref.name);)
    if ((er.GetParent(&parentEntry)            == B_NO_ERROR)&&
        (parentNode.SetTo(&parentEntry)        == B_NO_ERROR)&&
        (parentNode.GetNodeRef(&parentNodeRef) == B_NO_ERROR)&&

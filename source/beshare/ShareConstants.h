@@ -5,12 +5,12 @@
 
 namespace beshare {
 
-#define VERSION_STRING "3.02"
-#define VERSION_DATE "2015/10/18"
+#define VERSION_STRING "3.03"
+#define VERSION_DATE "2018/10/28"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE   50
-#define CLUMP_CHAR          '\1' 
+#define CLUMP_CHAR          '\1'
 
 #define BESHARE_MIME_TYPE "application/x-vnd.Sugoi-BeShare"
 #define FACTORY_DEFAULT_USER_NAME        "binky"
@@ -23,8 +23,9 @@ namespace beshare {
 #define SECOND_AUTO_UPDATER_URL    "http://" SECOND_AUTO_UPDATER_SERVER "/servers.txt"
 
 #define BESHARE_BEBITS_URL   "http://www.bebits.com/app/1330/"
-//#define BESHARE_HOMEPAGE_URL "http://www.lcscanada.com/beshare/"
+#define BESHARE_HOMEPAGE_URL "https://public.msli.com/lcs/beshare/"
 #define BESHARE_FATELK_URL "http://fatelk.com/repo/"
+#define MUSCLE_HOMEPAGE_URL "https://public.msli.com/lcs/muscle/"
 
 #define NO_FILE_LIMIT 999999
 
@@ -56,7 +57,7 @@ enum LogFilterType {
    FILTER_ERROR_MESSAGES,
    FILTER_USER_IDS,
    NUM_FILTERS
-};           
+};
 
 // Destinations for the chat to be filtered to
 enum LogDestinationType {
@@ -64,7 +65,7 @@ enum LogDestinationType {
    DESTINATION_LOG_FILE,
    NUM_DESTINATIONS
 };
-            
+
 // Sound names for the prefs panel
 #define SYSTEM_SOUND_USER_NAME_MENTIONED                  "BeShare-Name Said"
 #define SYSTEM_SOUND_PRIVATE_MESSAGE_RECEIVED             "BeShare-Private Msg"
