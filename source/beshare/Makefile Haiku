@@ -1,4 +1,4 @@
-# BeShare Makefile -- Haiku DEBUG version
+# BeShare Makefile -- Haiku version
 # -- adapted from original LCS
 
 CC  = gcc
@@ -6,7 +6,7 @@ CXX = gcc
 CFLAGS = -I../muscle -Isanta -Isanta/BetterScrollView -Isanta/ColumnListView -Isanta/Cursors -Isanta/NewStrings -Isanta/PrefilledBitmap -Isanta/ScrollViewCorner -I../muscle/zlib/zlib -DMUSCLE_ENABLE_ZLIB_ENCODING
 
 CXXFLAGS = $(CFLAGS)
-LFLAGS = -g
+LFLAGS = 
 LIBS = 
 EXECUTABLES = BeShare md5test filechopper
 REGEXOBJS = 
@@ -14,8 +14,9 @@ SANTAOBJS = BetterScrollView.o CLVColumn.o CLVColumnLabelView.o CLVEasyItem.o CL
 ZLIBOBJS = adler32.o deflate.o trees.o zutil.o inflate.o inftrees.o inffast.o crc32.o compress.o
 RESOURCE = BeShare.rsrc
 
-CFLAGS += -D__BEOS__ -Wall -W -Wno-multichar -fno-exceptions -O0 -g
-LIBS = -lbe -lnet -lroot -ltranslation
+
+CFLAGS += -D__BEOS__ -Wall -W -Wno-multichar -fno-exceptions -O2  # faster than -O3!!
+LIBS = -lbe -lnetwork -lroot -ltranslation
 CXXFLAGS += -DMUSCLE_MAX_OUTPUT_CHUNK=1000
 
 VPATH += ../muscle/message ../muscle/besupport ../muscle/iogateway ../muscle/reflector ../muscle/regex ../muscle/system ../muscle/util ../muscle/syslog ../muscle/zlib ../muscle/zlib/zlib santa santa/BetterScrollView santa/ColumnListView santa/Cursors santa/NewStrings santa/PrefilledBitmap santa/ScrollViewCorner
