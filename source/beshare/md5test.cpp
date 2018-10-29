@@ -14,7 +14,7 @@ int main(int argc, char ** argv)
    off_t len = (argc > 2) ? atol(argv[2]) : 0LL;
    off_t origLen = len;
    const char * filename = argv[1];
-   if (len > 0) printf("Calculating md5 for the first %Li bytes of [%s]...\n", len, filename);
+   if (len > 0) printf("Calculating md5 for the first %Li bytes of [%s]...\n", (long long int) len, filename);
            else printf("Calculating md5 for [%s]\n", filename);
 
    BEntry entry(filename, true);
@@ -24,8 +24,8 @@ int main(int argc, char ** argv)
       off_t retBytesHashed;
       if (HashFileMD5(entry, len, 0, retBytesHashed, digest, NULL) == B_NO_ERROR)
       {
-         if (origLen > 0) printf("Hash of first %Lu bytes: ", len);
-                     else printf("Hash of all %Lu bytes: ", len);
+         if (origLen > 0) printf("Hash of first %Lu bytes: ", (long long unsigned int) len);
+                     else printf("Hash of all %Lu bytes: ", (long long unsigned int) len);
          for (int i=0; i<16; i++) printf("%02x ", digest[i]);
          printf("\n");
       }

@@ -109,8 +109,8 @@ SetNumSharedFiles(int32 bw)
    char temp[100] = "?";
    if (_numSharedFiles >= 0) 
    {
-      if ((_firewalled)&&(_owner->GetFirewalled())) sprintf(temp, "(%li)", _numSharedFiles);
-                                               else sprintf(temp, "%li", _numSharedFiles);
+      if ((_firewalled)&&(_owner->GetFirewalled())) sprintf(temp, "(%li)", (long int) _numSharedFiles);
+                                               else sprintf(temp, "%li", (long int) _numSharedFiles);
    }
    SetColumnContent(REMOTE_USER_COLUMN_FILES, temp, false, true);
    _owner->RefreshUserItem(this);
@@ -126,8 +126,8 @@ SetUploadStats(uint32 cu, uint32 mu)
    char temp[128];
    if (_curUploads < NO_FILE_LIMIT)
    {
-      if (_maxUploads >= NO_FILE_LIMIT) sprintf(temp, "(%lu) 0%%", _curUploads);
-                                   else sprintf(temp, "(%lu/%lu) %.0f%%", _curUploads, _maxUploads, GetLoadFactor()*100.0f);
+      if (_maxUploads >= NO_FILE_LIMIT) sprintf(temp, "(%lu) 0%%", (long unsigned int) _curUploads);
+                                   else sprintf(temp, "(%lu/%lu) %.0f%%", (long unsigned int) _curUploads, (long unsigned int) _maxUploads, GetLoadFactor()*100.0f);
    }
    else strcpy(temp, "?");
 

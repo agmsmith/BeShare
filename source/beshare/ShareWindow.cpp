@@ -168,7 +168,7 @@ public:
          RemoteUserItem * owner = item->GetOwner();
          uint64 ID = owner->GetInstallID();
          char strbuf[17];
-         sprintf(strbuf,"%Lx", ID);
+         sprintf(strbuf,"%Lx", (long long unsigned int) ID);
 
          String URL;
          URL << "beshare://" 
@@ -801,7 +801,7 @@ private:
       char buf[128]; 
       if (transferRate > 0) 
       {
-         sprintf(buf, "%luKB%s", transferRate, str(STR_SEC));
+         sprintf(buf, "%luKB%s", (long unsigned int) transferRate, str(STR_SEC));
          char * comma = strchr(buf, ','); if (comma) *comma = '\0';
       }
       else strcpy(buf, str(STR_NO_LIMIT));
@@ -1143,8 +1143,8 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          BMessage * pmsg = new BMessage(SHAREWINDOW_COMMAND_SET_PAGE_SIZE);
          pmsg->AddInt32("pagesize", ps);
          char temp[64];
-         if (ps >= 1000) sprintf(temp, "%lu,000", ps/1000);
-                    else sprintf(temp, "%lu",     ps);
+         if (ps >= 1000) sprintf(temp, "%lu,000", (long unsigned int) ps/1000);
+                    else sprintf(temp, "%lu",     (long unsigned int) ps);
          BMenuItem * nextPMenu = new BMenuItem(temp, pmsg);
          if (ps == _pageSize) nextPMenu->SetMarked(true);
          pageSizeMenu->AddItem(nextPMenu);
@@ -1167,7 +1167,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          BMessage * amsg = new BMessage(SHAREWINDOW_COMMAND_SET_AUTO_AWAY);
          amsg->AddInt32("autoaway", away);
          char temp[64];
-         if (away > 0) sprintf(temp, "%lu %s", away, str(STR_MINUTES));
+         if (away > 0) sprintf(temp, "%lu %s", (long unsigned int) away, str(STR_MINUTES));
                   else strcpy(temp, str(STR_DISABLED));
          BMenuItem * nextAMenu = new BMenuItem(temp, amsg);
          if (away == _idleTimeoutMinutes) nextAMenu->SetMarked(true);
@@ -1644,7 +1644,7 @@ ShareWindow :: CreatePresetItem(int32 what, int32 which, bool enabled, bool shif
    msg->AddInt32("which", which);
 
    char temp[32];
-   sprintf(temp, "%li", which);
+   sprintf(temp, "%li", (long int) which);
    BMenuItem * mi = new BMenuItem(temp, msg, '0'+which, shiftShortcut ? B_SHIFT_KEY : 0);
    mi->SetEnabled(enabled);
    return mi;
@@ -1999,7 +1999,7 @@ MakeLimitSubmenu(const BMessage & settingsMsg, uint32 code, const char * label, 
    for (uint32 i=0; i<ARRAYITEMS(limits); i++)
    {
       char temp[80];
-      if (i < ARRAYITEMS(limits)-1) sprintf(temp, "%lu", limits[i]);
+      if (i < ARRAYITEMS(limits)-1) sprintf(temp, "%lu", (long unsigned int) limits[i]);
                                else strncpy(temp, str(STR_NO_LIMIT), sizeof(temp));
       BMessage * msg = new BMessage(code);
       msg->AddInt32("num", limits[i]);
@@ -2926,7 +2926,7 @@ void ShareWindow :: MessageReceived(BMessage * msg)
 
                         if (nextString.StartsWith("beshare_"))
                         {
-                           StringTokenizer tok(nextString()+8, "=");
+                           StringTokenizer tok(nextString()+8, "="); // GCC7 stupid warning here.
                            const char * param = tok.GetNextToken();
                            if (param)
                            { 
@@ -3568,7 +3568,7 @@ UpdateConnectStatus(bool titleToo)
 
    char buf[200];
    strcpy(buf, str(STR_CONNECT_TO));
-   strncat(buf, sname, sizeof(buf));
+   strncat(buf, sname, sizeof(buf)-1);
    buf[sizeof(buf)-1] = '\0';
    _connectMenuItem->SetLabel(buf);
 
@@ -4601,7 +4601,7 @@ LogRateLimit(const char * preamble, uint32 limit, ChatWindow * optEchoTo)
    String iStr(preamble);
    if (limit > 0)
    {
-      char buf[64]; sprintf(buf, " %lu ", limit);
+      char buf[64]; sprintf(buf, " %lu ", (long unsigned int) limit);
       iStr += buf;
       iStr += str(STR_TOKEN_BYTES_PER_SECOND);
    }
@@ -5225,17 +5225,17 @@ ShareWindow :: MakeTimeElapsedString(int64 t) const
 
    if (weeks > 0)
    {
-      sprintf(temp, "%Li %s, ", weeks, str(STR_WEEKS));
+      sprintf(temp, "%Li %s, ", (long long int) weeks, str(STR_WEEKS));
       s += temp;
    }
 
    if ((weeks > 0)||(days > 0))
    {
-      sprintf(temp, "%Li %s, ", days, str(STR_DAYS));
+      sprintf(temp, "%Li %s, ", (long long int) days, str(STR_DAYS));
       s += temp;
    }
 
-   sprintf(temp, "%Li:%02Li:%02Li", hours, minutes, seconds);
+   sprintf(temp, "%Li:%02Li:%02Li", (long long int) hours, (long long int) minutes, (long long int) seconds);
    s += temp;
 
    return s;

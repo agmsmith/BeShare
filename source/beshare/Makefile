@@ -102,7 +102,21 @@ savebeos : CFLAGS += -DSAVE_BEOS
 savebeos : RESOURCE = BeShare-sbe.rsrc
 savebeos : all
 
-BeShare : ReflowingTextView.o ShareNetClient.o ShareFileTransfer.o ChatWindow.o ShareApplication.o ShareWindow.o PrivateChatWindow.o MessageTransceiverThread.o Thread.o AcceptSocketsThread.o Message.o SetupSystem.o String.o main.o SysLog.o AbstractMessageIOGateway.o PulseNode.o MessageIOGateway.o PlainTextMessageIOGateway.o PathMatcher.o QueryFilter.o ConvertMessages.o RemoteFileItem.o RemoteUserItem.o RemoteInfo.o ShareColumn.o ShareMIMEInfo.o NetworkUtilityFunctions.o ShareUtils.o SplitPane.o md5.o StringMatcher.o ShareStrings.o ReflectServer.o AbstractReflectSession.o DumbReflectSession.o StorageReflectSession.o DataNode.o ServerComponent.o PathMatcher.o StringMatcher.o RateLimitSessionIOPolicy.o ColorPicker.o ByteBuffer.o ZLibCodec.o ZLibUtilityFunctions.o $(SANTAOBJS) $(REGEXOBJS) $(ZLIBOBJS)
+BeShare : ReflowingTextView.o ShareNetClient.o ShareFileTransfer.o \
+          ChatWindow.o ShareApplication.o ShareWindow.o PrivateChatWindow.o \
+          MessageTransceiverThread.o Thread.o AcceptSocketsThread.o Message.o \
+          SetupSystem.o String.o main.o SysLog.o AbstractMessageIOGateway.o \
+          PulseNode.o MessageIOGateway.o PlainTextMessageIOGateway.o \
+          PathMatcher.o QueryFilter.o ConvertMessages.o RemoteFileItem.o \
+          RemoteUserItem.o RemoteInfo.o ShareColumn.o ShareMIMEInfo.o \
+          NetworkUtilityFunctions.o ShareUtils.o SplitPane.o md5.o \
+          StringMatcher.o ShareStrings.o ReflectServer.o \
+          AbstractReflectSession.o DumbReflectSession.o \
+          StorageReflectSession.o GlobalMemoryAllocator.o DataNode.o \
+          ServerComponent.o PathMatcher.o StringMatcher.o \
+          RateLimitSessionIOPolicy.o ColorPicker.o \
+          ByteBuffer.o ZLibCodec.o ZLibUtilityFunctions.o \
+          $(SANTAOBJS) $(REGEXOBJS) $(ZLIBOBJS)
 	$(CXX) $(LIBS) $(LFLAGS) -o $@ $^
 	xres -o $@ $(RESOURCE)
 	mimeset -F $@	

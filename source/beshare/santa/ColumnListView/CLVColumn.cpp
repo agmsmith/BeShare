@@ -50,7 +50,7 @@ CLVColumn::CLVColumn(const char* label,float width,uint32 flags,float min_width)
 	{
 		fLabel = new char[strlen(label)+1];
 		strcpy((char*)fLabel,label);
-		if(CLV_HEADER_TRUNCATE)
+		if(fFlags & CLV_HEADER_TRUNCATE)
 		{
 			int32 truncated_text_length = strlen(label)+3;
 			fTruncatedText = new char[truncated_text_length];

@@ -212,6 +212,8 @@ void CLVListItem::Update(BView* owner, const BFont* font)
 }
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 void CLVListItem::ColumnWidthChanged(int32 column_index, float column_width, ColumnListView* the_view)
 {
 	//Get rid of a warning
@@ -219,8 +221,11 @@ void CLVListItem::ColumnWidthChanged(int32 column_index, float column_width, Col
 	column_width = 0;
 	the_view = NULL;
 }
+#pragma GCC diagnostic pop
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 void CLVListItem::FrameChanged(int32 column_index, BRect new_frame, ColumnListView* the_view)
 {
 	//Get rid of a warning
@@ -229,3 +234,4 @@ void CLVListItem::FrameChanged(int32 column_index, BRect new_frame, ColumnListVi
 	the_view = NULL;
 
 }
+#pragma GCC diagnostic pop

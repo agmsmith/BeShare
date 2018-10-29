@@ -267,15 +267,12 @@ void SplitPane::MouseMoved(BPoint where,uint32 /*info*/,const BMessage */*m*/){
    const BPoint & ms2 = swapPanes ? MinSizeOne : MinSizeTwo;
 
    if(Draggin){
-      float minVal;
       switch(align){
       case B_HORIZONTAL:
          pos.y = (where.y)-(thickness.y/2);
-         minVal = ms1.y;
          break;
       case B_VERTICAL:
          pos.x = (where.x)-(thickness.x/2);
-         minVal = ms1.x;
          break;
       }
 

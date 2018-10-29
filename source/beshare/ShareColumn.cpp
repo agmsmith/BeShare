@@ -77,7 +77,7 @@ GetFileCellText(const RemoteFileItem * item) const
                   if (msg.FindInt64(attrName, &v) == B_NO_ERROR) 
                   {
                      if (strcmp(attrName, "beshare:File Size") == 0) GetByteSizeString(v, _buf);
-                                                                else sprintf(_buf, "%Li", v);
+                                                                else sprintf(_buf, "%Li", (long long int) v);
                   }
                }
                break;
@@ -88,7 +88,7 @@ GetFileCellText(const RemoteFileItem * item) const
                   if (msg.FindInt32(attrName, &v) == B_NO_ERROR) 
                   {
                      if (strcmp(attrName, "beshare:Modification Time") == 0) GetTimeString(v, _buf);
-                                                                        else sprintf(_buf, "%li", v);
+                                                                        else sprintf(_buf, "%li", (long int) v);
                   }
                }
                break;

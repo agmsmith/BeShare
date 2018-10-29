@@ -1086,7 +1086,7 @@ MessageReceived(const MessageRef & msgRef)
                   errStr += _currentFileName;
 
                   char temp[256];
-                  sprintf(temp, "] (mine=%lu, his=%lu, %lu bytes)", myChecksum, checksum, numBytes);
+                  sprintf(temp, "] (mine=%lu, his=%lu, %lu bytes)", (unsigned long) myChecksum, (unsigned long) checksum, (unsigned long) numBytes);
                   errStr += temp;
 
                   errStr += " This shouldn't ever happen... looks like something is garbling your incoming TCP stream!?!?";
@@ -1434,8 +1434,8 @@ DrawItem(BView * lv, BRect itemRect, bool /*complete*/)
                      text += buf;
                      text += str(STR_SEC);
                  
-                     if (secondsToGo >= (60*60)) sprintf(buf, "%Lu:%02Lu:%02Lu", secondsToGo/(60*60), (secondsToGo/60)%60, secondsToGo%60);
-                                            else sprintf(buf, "%Lu:%02Lu", secondsToGo/60, secondsToGo%60);
+                     if (secondsToGo >= (60*60)) sprintf(buf, "%Lu:%02Lu:%02Lu", (unsigned long long) secondsToGo/(60*60), (unsigned long long) (secondsToGo/60)%60, (unsigned long long) secondsToGo%60);
+                                            else sprintf(buf, "%Lu:%02Lu", (unsigned long long) secondsToGo/60, (unsigned long long) secondsToGo%60);
                      text += buf;
                      text += ")";
                   }

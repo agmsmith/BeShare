@@ -13,7 +13,7 @@ GetByteSizeString(int64 v, char * buf)
    else if (v > (1024LL*1024LL*1024LL)) sprintf(buf, "%.2fGB", ((double)v)/(1024LL*1024LL*1024LL));
    else if (v > (1024LL*1024LL)) sprintf(buf, "%.2fMB", ((double)v)/(1024LL*1024LL));
    else if (v > (1024LL*10LL)) sprintf(buf, "%LiKB", v/1024LL);
-   else sprintf(buf, "%Li bytes", v);
+   else sprintf(buf, "%Li bytes", (long long int) v);
 }
 
 void 

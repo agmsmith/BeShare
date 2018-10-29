@@ -274,7 +274,7 @@ bool ColumnListView::AddColumn(CLVColumn* Column)
 		return false;
 
 	//Check if this should be locked at the beginning or end, and adjust its position if necessary
-	if(!Column->Flags() & CLV_LOCK_AT_END)
+	if(!(Column->Flags() & CLV_LOCK_AT_END))
 	{
 		bool Repeat;
 		if(Column->Flags() & CLV_LOCK_AT_BEGINNING)
@@ -372,7 +372,7 @@ bool ColumnListView::AddColumnList(BList* NewColumns)
 		CLVColumn* Column = (CLVColumn*)NewColumns->ItemAt(Counter);
 		//Check if this should be locked at the beginning or end, and adjust its position if necessary
 		int32 DisplayIndex = NumberOfColumns;
-		if(!Column->Flags() & CLV_LOCK_AT_END)
+		if(!(Column->Flags() & CLV_LOCK_AT_END))
 		{
 			bool Repeat;
 			if(Column->Flags() & CLV_LOCK_AT_BEGINNING)
@@ -608,6 +608,8 @@ void ColumnListView::ColumnWidthChanged(int32 ColumnIndex, float NewWidth)
 }
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 void ColumnListView::DisplayOrderChanged(const int32* order)
 {
 	int num_columns = fColumnList.CountItems();
@@ -676,9 +678,9 @@ void ColumnListView::DisplayOrderChanged(const int32* order)
 			}
 		}
 	}
-	//Get rid of a warning:
-	order = NULL;
+	order = NULL; // Hide an unused parameter compiler warning.
 }
+#pragma GCC diagnostic pop
 
 
 void ColumnListView::GetDisplayOrder(int32* order) const
