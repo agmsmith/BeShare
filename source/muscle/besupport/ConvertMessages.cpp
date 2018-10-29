@@ -81,7 +81,7 @@ status_t ConvertFromBMessage(const BMessage & from, Message & to)
       for (int32 j=0; j<count; j++)
       {
          const void * nextItem;
-         int32 itemSize;
+         ssize_t itemSize;
          if (from.FindData(name, type, j, &nextItem, &itemSize) != B_NO_ERROR) return B_ERROR;
 
          // do any necessary translation from the Be data types to Muscle data types

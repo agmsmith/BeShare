@@ -109,7 +109,7 @@ public:
    virtual void MouseDown(BPoint where)
    {
       BPoint pt;
-      ulong buttons;
+      uint32 buttons;
 
       GetMouse(&pt, &buttons);
       if (buttons & B_SECONDARY_MOUSE_BUTTON) 
@@ -308,7 +308,7 @@ public:
    virtual void MouseDown(BPoint where)
    {
       BPoint pt;
-      ulong buttons;
+      uint32 buttons;
 
       GetMouse(&pt, &buttons);
       if (buttons & B_SECONDARY_MOUSE_BUTTON) 
@@ -486,7 +486,7 @@ public:
    virtual void MouseDown(BPoint where)
    {
       BPoint pt;
-      ulong buttons;
+      uint32 buttons;
 
       GetMouse(&pt, &buttons);
       if (buttons & B_SECONDARY_MOUSE_BUTTON)
@@ -2947,12 +2947,16 @@ void ShareWindow :: MessageReceived(BMessage * msg)
                   { 
                     if (g_servertest == 0)
                     {
-                      pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "AUTO_UPDATER_SERVER"\n\n");
+                      pmsg()->AddString(PR_NAME_TEXT_LINE,
+                        "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/" VERSION_STRING
+                        "\nHost: " AUTO_UPDATER_SERVER "\n\n");
                       _checkServerListThread.SendMessageToSessions(pmsg);
                     }
                     if (g_servertest == 1)
                     {
-                      pmsg()->AddString(PR_NAME_TEXT_LINE, "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/"VERSION_STRING"\nHost: "SECOND_AUTO_UPDATER_SERVER"\n\n");
+                      pmsg()->AddString(PR_NAME_TEXT_LINE,
+                        "GET /servers.txt HTTP/1.1\nUser-Agent: BeShare/" VERSION_STRING
+                        "\nHost: " SECOND_AUTO_UPDATER_SERVER "\n\n");
                       _checkServerListThread.SendMessageToSessions(pmsg);
                     }
                   }

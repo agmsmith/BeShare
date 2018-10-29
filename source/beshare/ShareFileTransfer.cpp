@@ -1026,7 +1026,7 @@ MessageReceived(const MessageRef & msgRef)
                   if (strncmp(fieldName(), "beshare:", 8))  // don't save our attributes, they aren't necessary
                   {
                      const void * attrData;
-                     size_t attrSize;
+                     uint32 attrSize;
                      uint32 c;
                      type_code type;
                      if ((msg->GetInfo(fieldName(), &type, &c)                   == B_NO_ERROR)&&
@@ -1070,7 +1070,7 @@ MessageReceived(const MessageRef & msgRef)
       case TRANSFER_COMMAND_FILE_DATA:
       {
          uint8 * data;
-         size_t numBytes;
+         uint32 numBytes;
          if ((_uploadSession == false)&&(msg->FindDataPointer("data", B_RAW_TYPE, (void **) &data, &numBytes) == B_NO_ERROR))
          {
             bool abortSession = false;
