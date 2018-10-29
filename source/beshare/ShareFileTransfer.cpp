@@ -177,7 +177,7 @@ public:
          {
             off_t uploadOffset = 0LL;  // default to starting the upload at the beginning of the file
             const uint8 * hisDigest;
-            size_t numBytes;
+            uint32 numBytes;
             if ((msg->FindData("md5", B_RAW_TYPE, i, (const void **) &hisDigest, &numBytes) == B_NO_ERROR)&&(numBytes == MD5_DIGEST_SIZE))
             {
                // Okay, the requestor has told us enough so that we can check our local file...

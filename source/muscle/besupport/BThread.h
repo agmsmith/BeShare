@@ -55,11 +55,11 @@ public:
      */
    status_t SetTarget(const BMessenger & newTarget, const BMessage * optNewNotificationMessage = NULL)
    {
-      if (LockSignalling() == B_NO_ERROR)
+      if (BaseThread::LockSignalling() == B_NO_ERROR)
       {
          _target = newTarget;
          if (optNewNotificationMessage) SetNotificationMessageAux(optNewNotificationMessage);
-         UnlockSignalling();
+	 BaseThread::UnlockSignalling();
          return B_NO_ERROR;
       }
       return B_ERROR;
@@ -74,10 +74,10 @@ public:
      */
    status_t SetNotificationMessage(const BMessage & newMsg)
    {
-      if (LockSignalling() == B_NO_ERROR)
+      if (BaseThread::LockSignalling() == B_NO_ERROR)
       {
-         SetNotificationMessageAux(&msg);
-         UnlockSignalling();
+         SetNotificationMessageAux(&newMsg);
+	 BaseThread::UnlockSignalling();
          return B_NO_ERROR;
       }
       return B_ERROR;

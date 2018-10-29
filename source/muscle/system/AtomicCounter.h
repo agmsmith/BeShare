@@ -183,21 +183,19 @@ private:
 #elif defined(__ATHEOS__)
    atomic_t _count;
 #elif defined(WIN32)
-# if defined(_MSC_VER) && defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-   volatile int _count;
-# else
-   long _count;
-# endif
-#elif defined(__BEOS__) || defined(__HAIKU__)
-# if defined(B_BEOS_VERSION_5)
-   vint32 _count;
-# else
-   int32 _count;
-# endif
+  # if defined(_MSC_VER) && defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
+    volatile int _count;
+  # else
+    long _count;
+  # endif
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
    volatile int _count;
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
    volatile int _count;
+#elif defined(__BEOS__)
+   vint32 _count;
+#elif defined(__HAIKU__)
+   int32 _count;
 #else
    volatile int32 _count;
 #endif
