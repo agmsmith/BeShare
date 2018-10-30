@@ -49,12 +49,14 @@ CLVColumn::CLVColumn(const char* label,float width,uint32 flags,float min_width)
 	if(label)
 	{
 		fLabel = new char[strlen(label)+1];
-		strcpy((char*)fLabel,label);
-		if(fFlags & CLV_HEADER_TRUNCATE)
+		strcpy(fLabel,label);
+		if(flags & CLV_HEADER_TRUNCATE)
 		{
 			int32 truncated_text_length = strlen(label)+3;
+			if (truncated_text_length < 256)
+				truncated_text_length = 256; // Elsewhere assumes 256 buffer length.
 			fTruncatedText = new char[truncated_text_length];
-			fTruncatedText[0] = 0;
+			strcpy (fTruncatedText, label);
 			fCachedRect.Set(-1,-1,-1,-1);		
 		}
 		else
