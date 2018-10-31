@@ -40,6 +40,10 @@
 #include "CLVColumn.h"
 #include "CLVListItem.h"
 
+#ifndef UINT32_MAX // Happens on PPC compiler in BeOS R5.
+  #define UINT32_MAX (4294967295U)
+#endif
+
 
 //******************************************************************************************************
 //**** BITMAPS

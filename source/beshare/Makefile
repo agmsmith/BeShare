@@ -59,7 +59,7 @@ ifeq ($(OSTYPE),beos)
       CXX = mwcc
       REGEXOBJS = regcomp.o regexec.o regerror.o regfree.o
       VPATH += ../muscle/regex/regex
-      CXXFLAGS += -I../regex/regex -I../zlib/zlib
+      CXXFLAGS += -I../muscle/regex/regex -I../muscle/zlib/zlib
       CXXFLAGS += -DMUSCLE_MAX_OUTPUT_CHUNK=1000 -Dstd=""
       LIBS = -ltranslation
       MEMORY_TRACKING_SUPPORTED = no  # mwcc can't handle it correctly :^(
@@ -128,4 +128,4 @@ filechopper : filechopper.o
 	$(CXX) $(LIBS) $(LFLAGS) -o $@ $^
 
 clean :
-	rm -f *.o *.xSYM $(EXECUTABLES)
+	rm -fv *.o *.xSYM $(EXECUTABLES)
