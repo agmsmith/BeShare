@@ -92,7 +92,7 @@ public:
          : "r" (p) 
          : "cc", "memory");
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-      volatile int * p = &_count;
+      volatile int32 * p = &_count;
       asm volatile(
          "lock; incl (%0)"
          : // No outputs
@@ -145,7 +145,7 @@ public:
       return(tmp == 0); 
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
       bool isZero;
-      volatile int * p = &_count;
+      volatile int32 * p = &_count;
       asm volatile(
          "lock; decl (%1)\n"
          "sete %0"
@@ -191,7 +191,7 @@ private:
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
    volatile int _count;
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-   volatile int _count;
+   volatile int32 _count;
 #elif defined(__BEOS__)
    vint32 _count;
 #elif defined(__HAIKU__)

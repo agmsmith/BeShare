@@ -1,0 +1,9 @@
+2.28 makefile:
+gcc -I../muscle -Isanta -Isanta/BetterScrollView -Isanta/ColumnListView -Isanta/Cursors -Isanta/NewStrings -Isanta/PrefilledBitmap -Isanta/ScrollViewCorner -I../muscle/zlib/zlib -DMUSCLE_ENABLE_ZLIB_ENCODING -D_ZETA_USING_DEPRECATED_API_ -D_ZETA_TS_FIND_DIR_ -Wall -W -Wno-multichar -fno-exceptions -O2   -DMUSCLE_MAX_OUTPUT_CHUNK=1000   -c ../muscle/message/Message.cpp -o Message.o
+
+3.03 makefile:
+g++ -I../muscle -Isanta -Isanta/BetterScrollView -Isanta/ColumnListView -Isanta/Cursors -Isanta/NewStrings -Isanta/PrefilledBitmap -Isanta/ScrollViewCorner -I../muscle/zlib/zlib -DMUSCLE_ENABLE_ZLIB_ENCODING -fno-exceptions -DMUSCLE_NO_EXCEPTIONS -Wall -W -Wno-multichar -O2 -DMUSCLE_MAX_OUTPUT_CHUNK=1000 -DMUSCLE_ENABLE_MEMORY_TRACKING   -c ../muscle/message/Message.cpp -o Message.o
+
+Ah ha!  MUSCLE_ENABLE_MEMORY_TRACKING was causing the mysterious crashes in the BeOS build, corrupting memory even before main() starts up!  Took a day to figure that one out, looking for where it was corrupting things.
+
+AGMS20181101

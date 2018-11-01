@@ -44,8 +44,11 @@ ZLIBOBJS = adler32.o deflate.o trees.o zutil.o inflate.o inftrees.o inffast.o \
            crc32.o compress.o
 RESOURCE = BeShare.rsrc
 
-# if muscled is crashing, try setting this to no; some older compilers can't handle memory tracking!
-MEMORY_TRACKING_SUPPORTED = yes
+# If muscled is crashing, try setting this to no; some older compilers can't
+# handle memory tracking!  Like GCC2, makes "delete new BMenuItem" fail
+# mysteriously, even before anything else has started up right at the beginning
+# of main().
+MEMORY_TRACKING_SUPPORTED = no
 
 # OSTYPE is "Haiku" or "beos" with that capitalization; if the OS type
 # variable is unset, try to set it using the uname shell command.
