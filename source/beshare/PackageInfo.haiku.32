@@ -29,10 +29,6 @@ provides {
     cmd:filechopper = 3.03
 }
 
-requires {
-    haiku>=r1~alpha4_pm        
-}
- 
 urls {
        "https://public.msli.com/lcs/beshare/index.html"
 }
