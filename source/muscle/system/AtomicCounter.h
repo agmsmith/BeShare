@@ -92,7 +92,7 @@ public:
          : "r" (p) 
          : "cc", "memory");
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-      volatile int32 * p = &_count;
+      volatile int * p = &_count;
       asm volatile(
          "lock; incl (%0)"
          : // No outputs
@@ -145,7 +145,7 @@ public:
       return(tmp == 0); 
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
       bool isZero;
-      volatile int32 * p = &_count;
+      volatile int * p = &_count;
       asm volatile(
          "lock; decl (%1)\n"
          "sete %0"
@@ -183,19 +183,19 @@ private:
 #elif defined(__ATHEOS__)
    atomic_t _count;
 #elif defined(WIN32)
-  # if defined(_MSC_VER) && defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-    volatile int _count;
-  # else
-    long _count;
-  # endif
+# if defined(_MSC_VER) && defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
+   volatile int _count;
+# else
+   long _count;
+# endif
+#elif defined(__BEOS__) /* Has it's own built-in atomics, don't use assembler version. */
+   vint32 _count;
+#elif defined(__HAIKU__) /* Has it's own built-in atomics, don't use assembler version. */
+   int32 _count;
 #elif defined(MUSCLE_USE_POWERPC_INLINE_ASSEMBLY)
    volatile int _count;
 #elif defined(MUSCLE_USE_X86_INLINE_ASSEMBLY)
-   volatile int32 _count;
-#elif defined(__BEOS__)
-   vint32 _count;
-#elif defined(__HAIKU__)
-   int32 _count;
+   volatile int _count;
 #else
    volatile int32 _count;
 #endif
