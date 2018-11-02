@@ -1,9 +1,11 @@
-# Makefile for building BeShare.
-# Works for BeOS Intel 32 bit CPU, maybe BeOS PowerPC 32 bit, Haiku 32 and 64 bit Intel x86 CPUs.
-# Remember = assignments evaluated later, := evaluates while reading makefile.
-# Last updated by AGMS20181028
+# Makefile for building BeShare.  Do plain "make" for a normal build,
+# "make debug" for a build with symbols included for debugging, "make clean" to
+# force a complete rebuild next time.  Works for BeOS R5 Intel 32 bit CPU, BeOS
+# R5 PowerPC 32 bit, Haiku 32 and 64 bit on Intel x86 CPUs.
+# Last updated by AGMS20181102
 
-# Use default compilers for C and C++, leave CC and CXX unset (gets you gcc & g++), unless needed.
+# Use default compilers for C and C++, leave CC and CXX unset (gets you gcc &
+# g++), unless needed.
 #CC  = gcc
 #CXX = gcc
 
@@ -64,6 +66,7 @@ ifeq ($(OSTYPE),beos)
       VPATH += ../muscle/regex/regex
       CXXFLAGS += -I../muscle/regex/regex -I../muscle/zlib/zlib
       CXXFLAGS += -DMUSCLE_MAX_OUTPUT_CHUNK=1000 -Dstd=""
+      CXXFLAGS += $(CCOPTFLAGS)
       LIBS = -ltranslation
       MEMORY_TRACKING_SUPPORTED = no  # mwcc can't handle it correctly :^(
    else # BeOS with Intel x86 CPU.
@@ -97,7 +100,10 @@ endif
 # Makes all the programs that can be made using just cross-platform code
 all : $(EXECUTABLES)
 
+# Sneaky double rule (with a blank line between them - needed) that makes a
+# debug build.
 debug : CCOPTFLAGS = -g
+
 debug : all
 
 # Left over stuff from BeShare prior to 2.27 or something.  Can't find that .rsrc file.

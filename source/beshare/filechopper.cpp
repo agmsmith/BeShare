@@ -14,6 +14,18 @@
 #include <stdlib.h>
 #include <fcntl.h>
 
+#if __POWERPC__ /* atoll is missing from the PowerPC standard library. */
+static long long atoll (const char *str) {
+  long long result = 0;
+  if (!str || !str[0])
+    return 0;
+  if (sscanf (str, "%Ld", &result) != 1)
+    result = 0;
+  return result;
+}
+#endif
+
+
 int main(int argc, char ** argv)
 {
    const long defaultChop = 65536;
@@ -27,22 +39,28 @@ int main(int argc, char ** argv)
       exit(0);
    }
 
-   long count = (argc == 3) ? atol(argv[2]) : defaultChop;
+   off_t count = (argc == 3) ? atoll(argv[2]) : defaultChop;
    FILE * fp = fopen(argv[1], "r");
    if (fp)
    {
+      off_t fileLen;
       fseek(fp, 0, SEEK_END);
-      long fileLen = ftell(fp);
+      // Try to get the 64 bit size of the file, ftell only gives us 32 bits, _ftell does 64 in BeOS but doesn't exist in Haiku, ftello is in Haiku.
+#if __BEOS__
+      fileLen = _ftell(fp);
+#else // Haiku OS.
+      fileLen = ftello(fp);
+#endif
       fclose(fp);
 
       int fd = open(argv[1], O_RDWR|O_APPEND); 
       if (fd >= 0)
       {
-         long newSize = fileLen - count;
+         off_t newSize = fileLen - count;
          if (newSize >= 0)
          {
             ftruncate(fd, newSize);
-            printf("Chopped the last %li bytes off of [%s], new size is [%li]\n", count, argv[1], newSize);
+            printf("Chopped the last %Li bytes off of [%s], new size is [%Li]\n", (long long int) count, argv[1], (long long int) newSize);
          }
          else printf("File is too short to chop that many bytes off!\n");
       }
