@@ -1,0 +1,8 @@
+Q: 
+How to add more FAQ questions?
+
+A:
+Use StyledEdit to make plain textfile than contains the question and its answer. Filename must be in
+lowercase and there is no maximum size, although it is recommended that file is relatively small (1 - 2kb).
+When file is finished send a private message to Admin and it will be downloaded, checked, and if approved 
+added to FAQ.

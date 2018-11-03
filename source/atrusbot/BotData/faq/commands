@@ -1,0 +1,5 @@
+Q: 
+How to add more commands to Atrus?
+
+A:
+Use StyledEdit to make a plain textfile than contains the response the bot should have when a command is directed towards it.. Filenames must be in lowercase and the file placed in the commands folder found within the bin folder inside the BOTs working directory. The name of the file becomes the "command"

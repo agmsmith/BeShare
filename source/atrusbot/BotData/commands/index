@@ -1,0 +1,18 @@
+=======
+ FAQ index
+=======
+
+Page:			Explanation:
+
+adding		- How to add more FAQ questions?
+autoresume		- How can I manually continue BeShare download?
+credits		- FAQbot credits
+commands		- How to add more commands to Atrus?
+e-mail			- How to add more e-mail addresses?
+
+
+To access a command type:
+Atrus gimme <command>
+
+For example:
+Atrus gimme credits

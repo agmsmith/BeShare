@@ -1,0 +1,6 @@
+Q: 
+How to add more e-mail addressed to the BOT's list?
+
+A:
+Use StyledEdit to make plain textfile than contains the mailto: tag. Filename must be in
+lowercase and saved as the nick you want that e-mail address associated with. Place the file in the email folder found within the bin folder inside the BOTs working directory.

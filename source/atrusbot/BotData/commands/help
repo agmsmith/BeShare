@@ -1,0 +1,25 @@
+My commands are as follows:
+
+Public & Private Commands:
+	gimme [FAQ page]		-   Gives requested FAQ page
+	index					-   Gives FAQ index
+	catsup [n]				-   Spit out the last page of chat so you can catch up on the conversation.  Optionally limit it to the last n lines of text.
+	email [nick]				-   Tells email address for [nick]
+	gmtime				-   Displays Greewitch Mean Time.
+	itime					-   Displays Net Time.
+	motd					-   Displays the current Message Of The Day.
+	message for [nick] [message]	-   Leaves a message for [nick] which is delivered when [nick] checks messages.
+	messages				-   Retrieves any messages you may have.
+	seen [nick]				-   Will make me tell you the last time I saw [nick].
+	time					-   Displays my local time.
+
+Private Commands (use /msg):
+	help					-   Prints this help file.
+	owner				-   Who is responsible for this mess.
+	public				-   Makes me respond publically.
+	private				-   Responses will be private.
+	version				-   What version I am up to.
+
+Notes:
+Nicks with spaces must be surrounded by single quotes (ie. 'space nic').
+Messaging functions are not 'secure' in any sense of the word.
