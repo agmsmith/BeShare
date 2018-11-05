@@ -102,8 +102,7 @@ Atrus : main.o VoidBot.o Bot.o BotData.o UserList.o User.o Message.o \
     AbstractMessageIOGateway.o MessageIOGateway.o String.o \
     NetworkUtilityFunctions.o SysLog.o PathMatcher.o StringMatcher.o \
     PulseNode.o SetupSystem.o ByteBuffer.o ZLibCodec.o QueryFilter.o \
-    adler32.o deflate.o trees.o zutil.o inflate.o inftrees.o inffast.o \
-    crc32.o compress.o $(REGEXOBJS) $(ZLIBOBJS)
+    $(REGEXOBJS) $(ZLIBOBJS)
 	$(CXX) $(LIBS) $(LFLAGS) -o $@ $^
 
 clean :
