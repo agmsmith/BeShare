@@ -24,7 +24,7 @@ ZLIBOBJS = adler32.o deflate.o trees.o zutil.o inflate.o inftrees.o inffast.o cr
 VPATH = ../message ../besupport ../iogateway ../reflector ../regex ../util ../syslog ../system ../zlib ../zlib/zlib
 
 # if muscled is crashing, try setting this to no; some older compilers can't handle memory tracking!
-MEMORY_TRACKING_SUPPORTED = yes
+MEMORY_TRACKING_SUPPORTED = no
 
 # if the OS type variable is unset, try to set it using the uname shell command
 ifeq ($(OSTYPE),)

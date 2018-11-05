@@ -8,7 +8,13 @@
 
 #include "VoidBot.h"
 
-const uint32 kChatHistoryDepth = 1000;
+const uint32 kChatHistoryDepth = 50000;
+	// Lots of history for IRC etc.  Figure a maximum of 800MB in BeOS
+	// allocatable memory, each line of chat is 1000 characters (probably
+	// much less), that gives us 800000 lines of text.  But with memory
+	// fragmentation, and not wanting to send huge amounts of text back
+	// to the user, limit it to this.
+
 const uint32 kDefaultChatHistory = 25;
 
 //-------------------------------------------------------------------------------
@@ -30,9 +36,9 @@ void VoidBot::ReceivedChatMessage(const char *SessionID, const char *Message)
 	{
 		if ( false == fPrivateCommand )
 		{
-			String lastwords("saying: ");
+			String lastwords("saying \"");
 			lastwords += Message;
-			lastwords += ", on: ";
+			lastwords += "\" on ";
 			lastwords += Time();
 			lastwords += " [";
 			lastwords += NetTime();
@@ -183,7 +189,7 @@ bool VoidBot::PublicCommands(const char* SessionID, const String& Command)
 		return true;
 	}
 	
-		//*****************<FORTUNE ADDED BY MISZA>************************//
+	//*****************<FORTUNE ADDED BY MISZA>************************//
 	pos = WholeWordPos(Command, "fortune");
 	if(-1 != pos)
 	{
@@ -324,42 +330,57 @@ bool VoidBot::PublicCommands(const char* SessionID, const String& Command)
 	if( B_ERROR != pos )
 	{
 		// The version string is made up of MAJOR_RELEASE.MINOR_RELEASE.BUG_FIXES
-		SendPrivateMessage(SessionID, "I am at version 2.41 (MUSCLE " MUSCLE_VERSION_STRING "), "
+		SendPrivateMessage(SessionID, "I am at version 2.5.0 (MUSCLE " MUSCLE_VERSION_STRING "), "
 			"built on " __DATE__ " at " __TIME__ ".");
 		return true;
 	}
-	
+
+	// "catsup" and "catslo" commands to play back stored chat history,
+	// "catsup n" does last n lines of chat, "catslo n" does last n lines
+	// of local chat excluding text from users with # at the start of
+	// their name (like #haiku, the IRC bridge bot).
+	bool isLo = false;
 	pos = WholeWordPos(Command, "catsup");
+	if( B_ERROR == pos )
+	{
+		pos = WholeWordPos(Command, "catslo");
+		isLo = true;
+	}
 	if( B_ERROR != pos )
 	{
 		// Figure out how many lines of chat to return
 		pos++;
-		pos += strlen("catsup");
-		
-		uint32 lines;
+		pos += strlen("catsup"); // Same length as catslo.
+		int lines = kDefaultChatHistory; // Needs to be signed.
 		if( (uint32)pos < Command.Length() )
 		{
-			lines = (uint32)atoi(&(Command.Cstr()[pos]));
-			if( 0 == lines )
-			{
+			lines = atoi(&(Command.Cstr()[pos]));
+			if( lines <= 0)
 				lines = kDefaultChatHistory;
-			}
-		}
-		else
-		{
-			lines = 25;
-		}
-		
-		if( lines > fChatHistory.size() )
-		{
-			lines = fChatHistory.size();
 		}
 
-		String chatText("\n");
-		for( uint32 i = lines; i > 0 ; i-- )
+		// Go through the history in newest to oldest order,
+		// prepending text to the output text if it matches
+		// our requirements.  Stop when we have enough text.
+		String chatText;
+		int historySize = fChatHistory.size();
+		for( int i = 0; i < historySize && lines > 0 ; i++ )
 		{
-			chatText += fChatHistory[i-1];
-			chatText += "\n";
+			// See if we should reject this line of text.
+			if (isLo)
+			{
+				// Look for the userid in a chat line, which looks like:
+				// [Mon Nov 5 22:51:22 GMT] (54) #haiku: chatter text
+				const char *testPntr = fChatHistory[i].Cstr();
+				while( *testPntr != 0 && *testPntr != ')' )
+					testPntr++;
+				if( testPntr[0] == ')' && testPntr[1] == ' ' && testPntr[2] == '#' )
+					continue; // Skip this line, has a userid with #.
+			}
+
+			chatText = chatText.Prepend("\n");
+			chatText = chatText.Prepend(fChatHistory[i]);
+			lines--;
 		}
 
 		SendPrivateMessage(SessionID, chatText.Cstr());
