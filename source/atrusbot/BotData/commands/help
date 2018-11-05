@@ -4,6 +4,7 @@ Public & Private Commands:
 	gimme [FAQ page]		-   Gives requested FAQ page
 	index					-   Gives FAQ index
 	catsup [n]				-   Spit out the last page of chat so you can catch up on the conversation.  Optionally limit it to the last n lines of text.
+	catslo [n]				-   Spit out the last page of local chat (excludes userids starting with #, like #haiku IRC bridge chat) so you can catch up on the conversation.  Optionally limit it to the last n lines of text.
 	email [nick]				-   Tells email address for [nick]
 	gmtime				-   Displays Greewitch Mean Time.
 	itime					-   Displays Net Time.

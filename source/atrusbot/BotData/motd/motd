@@ -1,6 +1,17 @@
-Welcome to BeShare.agmsmith.ca.
+Welcome to BeShare.example.com.
 
-This is a backup BeShare server, running on my home PC (so don't
-expect it to be up all the time).  It's purpose is to be there just in
-case all the other BeShare servers are down.  Started 2014.11.18.
+This is a backup BeShare server, to be there just in case all the other
+BeShare servers are down.  Started 20181105
+
+Known BeShare servers as of 20181105:
+BeShare.TyComSystems.com (also see http://www.tycomsystems.com/beos/)
+CoquilletKD.com BeShare.agmsmith.ca
+
+Known 3rd party Haiku software repositories as of 20181105:
+BeSly Software Solutions http://software.besly.de/repo
+FatElk http://coquilletkd.com/fatelk/repo/ and .../repo_64/
+Guest One's Russian collection http://haiku.uwolke.ru/repo/binaries-x86_gcc2 and .../java-ports/
+Kacperkasper's http://haiku.kacperkasper.pl/repo/x86_gcc2/ and .../x86/ and .../x86_64/
+
+Also see https://www.haiku-os.org/community/software
 
