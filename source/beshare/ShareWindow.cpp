@@ -408,12 +408,12 @@ static const char * _defaultServers[] =
 
 // Size constants for the non-resizable parts of the GUI
 #define USER_LIST_WIDTH    125
-#define STATUS_VIEW_WIDTH  500
+#define STATUS_VIEW_WIDTH  750
 #define UPPER_VIEW_HEIGHT  (fontHeight+7.0f)
 #define QUERY_VIEW_HEIGHT  UPPER_VIEW_HEIGHT
 #define CHAT_VIEW_HEIGHT   125
-#define USER_ENTRY_WIDTH   200
-#define USER_STATUS_WIDTH  125
+#define USER_ENTRY_WIDTH   250
+#define USER_STATUS_WIDTH  250
 
 #define SPECIAL_COLUMN_CHAR 0x01
 
@@ -1245,25 +1245,25 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
    BView * contentView = new BView(contentFrame, "ContentView", B_FOLLOW_ALL_SIDES, 0);
    AddBorderView(contentView);
    AddChild(contentView);
+
    {
       // Fill out the upperLevel view
-      BRect upperViewFrame(0, 0, contentFrame.Width() - hMargin, UPPER_VIEW_HEIGHT);
+      BRect upperViewFrame(hMargin, 0, contentFrame.Width() - hMargin, UPPER_VIEW_HEIGHT);
       BView * upperView = new BView(upperViewFrame, "UpperView", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 0);
       AddBorderView(upperView);
       contentView->AddChild(upperView);
 
-
       {
          // Fill out the status view
-         BRect statusViewFrame(upperViewFrame.Width()-STATUS_VIEW_WIDTH, 0,
-             upperViewFrame.Width(), upperViewFrame.Height());
-         _statusView = new BView(statusViewFrame, NULL, B_FOLLOW_RIGHT| B_FOLLOW_TOP_BOTTOM, 0);
+         BRect statusViewFrame(hMargin, 0, upperView->Bounds().Width()-hMargin, upperView->Bounds().Height());
+         _statusView = new BView(statusViewFrame, NULL, B_FOLLOW_LEFT_RIGHT| B_FOLLOW_TOP_BOTTOM, 0);
          AddBorderView(_statusView);
          upperView->AddChild(_statusView);
+         float extraMenuWidth = _statusView->StringWidth("MMM");
 
          {
             // Fill out the Server menu and text control
-            float serverMenuWidth = _statusView->StringWidth(str(STR_SERVER))+25.0f;
+            float serverMenuWidth = _statusView->StringWidth(str(STR_SERVER))+extraMenuWidth;
             _serverMenu = new BMenu(str(STR_SERVER));
             _statusView->AddChild(AddBorderView(_serverMenuField =
                  new BMenuField(BRect(0,4,serverMenuWidth,statusViewFrame.Height()), NULL, NULL, _serverMenu)));
@@ -1294,7 +1294,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
 
          {
             // Fill out the UserName menu and text control
-            float userNameMenuWidth = _statusView->StringWidth(str(STR_USER_NAME_COLON))+25.0f;
+            float userNameMenuWidth = _statusView->StringWidth(str(STR_USER_NAME_COLON))+extraMenuWidth;
             float userNameMenuLeft = STATUS_VIEW_WIDTH-(USER_ENTRY_WIDTH+USER_STATUS_WIDTH);
             _userNameMenu = new BMenu(str(STR_USER_NAME_COLON));
             _statusView->AddChild(AddBorderView(new BMenuField(
@@ -1326,7 +1326,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
             // Fill out the UserStatus menu and text control
             String statusColon = str(STR_STATUS);
             statusColon += ':';
-            float userStatusMenuWidth = _statusView->StringWidth(statusColon())+25.0f;
+            float userStatusMenuWidth = _statusView->StringWidth(statusColon())+extraMenuWidth;
             float userStatusMenuLeft = hMargin+(STATUS_VIEW_WIDTH-USER_STATUS_WIDTH);
             _userStatusMenu = new BMenu(statusColon());
             _statusView->AddChild(AddBorderView(new BMenuField(
@@ -1374,15 +1374,16 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          _queryView = new BView(queryViewFrame, NULL, B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 0);
          AddBorderView(_queryView);
          resultsView->AddChild(_queryView);
+         float extraMenuWidth = _queryView->StringWidth("MMMMM");
          
          const char * q = str(STR_QUERY);
          _queryMenu = new BMenu(q);
-         float qw = _queryView->StringWidth(q)+36.0f;
+         float qw = _queryView->StringWidth(q)+extraMenuWidth;
          _queryView->AddChild(AddBorderView(new BMenuField(
             BRect(hMargin,4,qw,fontHeight), NULL, NULL, _queryMenu)));
          
          float right = queryViewFrame.Width()-hMargin;
-         float stringWidth = _queryMenu->StringWidth(str(STR_STOP_QUERY))+36.0f;
+         float stringWidth = _queryMenu->StringWidth(str(STR_STOP_QUERY))+extraMenuWidth;
          _disableQueryButton = new BButton(
             BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_STOP_QUERY),
              new BMessage(SHAREWINDOW_COMMAND_DISABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
@@ -1390,7 +1391,7 @@ ShareWindow :: ShareWindow(uint64 installID, BMessage & settingsMsg, const char 
          _queryView->AddChild(_disableQueryButton);
          right -= (stringWidth + hMargin);
 
-         stringWidth = _queryMenu->StringWidth(str(STR_START_QUERY))+36.0f;
+         stringWidth = _queryMenu->StringWidth(str(STR_START_QUERY))+extraMenuWidth;
          _enableQueryButton = new BButton(
             BRect(right-stringWidth,3,right,fontHeight), NULL, str(STR_START_QUERY),
              new BMessage(SHAREWINDOW_COMMAND_ENABLE_QUERY), B_FOLLOW_RIGHT | B_FOLLOW_TOP);
