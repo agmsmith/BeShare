@@ -1,4 +1,4 @@
-BeShare v3.03 (Universal - BeOS and Haiku, PowerPC and Intel CPUs, 32 and 64 bit)
+BeShare v3.04 (Universal - BeOS and Haiku, PowerPC and Intel CPUs, 32 and 64 bit)
 =================================================================================
 by Jeremy Friesner (jaf@lcsaudio.com)
 Extensions by Pete Goodeve, BBJimmy, AGMS and others
@@ -184,6 +184,10 @@ all translator addresses:  socca@bemail.org, beat.rupp@gmx.net, ted@3rd-rock.net
 
 History
 =======
+
+v3.04  * Rearranged GUI so the Server, User Name, Status boxes
+         are left justified and larger.  Also the menu titles
+         now have enough space to be displayed fully on Haiku.
 
 v3.03  * Makefile cleaned up to work on all BeOS and Haiku
          systems, and code fixed to build in 64 bit Haiku too.

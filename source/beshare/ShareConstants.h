@@ -5,8 +5,8 @@
 
 namespace beshare {
 
-#define VERSION_STRING "3.03"
-#define VERSION_DATE "2018/10/28"
+#define VERSION_STRING "3.04"
+#define VERSION_DATE "2018/11/07"
 
 #define DEFAULT_LISTEN_PORT 7000
 #define LISTEN_PORT_RANGE   50
